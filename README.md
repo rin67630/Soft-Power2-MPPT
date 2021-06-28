@@ -36,8 +36,15 @@ The whole solution is working completely self-contained:
 
 The dashboards are running in the cloud at http://thinger.io, where you can create an account free of charge for up to two devices.
 You can create there very powerful dashboards interactively, and modify them on the fly.
-![image](https://user-images.githubusercontent.com/14197155/123584914-82aeb300-d7e2-11eb-97ac-eaa375c6e077.png)
+Here two examples:
+## Control dashboard:
+![image](https://user-images.githubusercontent.com/14197155/123584914-82aeb300-d7e2-11eb-97ac-eaa375c6e077.png)  
+
+## Statistics dashboard:
 ![image](https://user-images.githubusercontent.com/14197155/123584988-aa9e1680-d7e2-11eb-914c-e2682b02a685.png)
+
+These are only examples of what you can do with Soft-Power2-MPPT and thinger.io...
+
 
 
 
