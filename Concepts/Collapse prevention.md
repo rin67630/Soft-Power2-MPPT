@@ -11,6 +11,6 @@ There are several unfavourable conditions that can lead to a collapse:
 Collapses frequently repeat as themselves into oscillations, dramatically reducing the overall power harvesting. 
 That happens also with commercial systems, the situation mainly remains unnoticed from the user, because it is a transitory situation. 
 
-Soft power2 MPPT is implementing a collapse prevention mechanism, to avoid business  unfavourable situation.
+Soft power2 MPPT is implementing a collapse prevention mechanism, to avoid that unfavourable situation.
 
 ![image](https://user-images.githubusercontent.com/14197155/123589381-6a8e6200-d7e9-11eb-97c1-d48f40c7f9e3.png)
