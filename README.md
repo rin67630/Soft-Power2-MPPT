@@ -36,9 +36,8 @@ The whole solution is working completely self-contained:
 
 The dashboards are running in the cloud at http://thinger.io, where you can create an account free of charge for up to two devices.
 You can create there very powerful dashboards interactively, and modify them on the fly.
-This is just an example, much more will come:  
-![image](https://user-images.githubusercontent.com/14197155/121425793-16732900-c973-11eb-972a-bc29875c6cbc.png)
-![image](https://user-images.githubusercontent.com/14197155/121425599-e1ff6d00-c972-11eb-9692-d7096f89d966.png)
+![image](https://user-images.githubusercontent.com/14197155/123584914-82aeb300-d7e2-11eb-97ac-eaa375c6e077.png)
+![image](https://user-images.githubusercontent.com/14197155/123584988-aa9e1680-d7e2-11eb-914c-e2682b02a685.png)
 
 
 
