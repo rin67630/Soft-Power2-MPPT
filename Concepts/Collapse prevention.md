@@ -1,6 +1,6 @@
 # Collapse prevention
 
-A collapse is when the panel voltage breaks down because more power is required, then the panel can provide.
+A collapse is when the panel voltage breaks down because more power is required, than the panel can provide.
 The overall power after the collapse is strongly reduced and the only way to restore the maximum power is to reduce the demand even more until the voltage increases again.
 
 There are several unfavourable conditions that can lead to a collapse:  
