@@ -25,8 +25,8 @@ You are encouraged to have a look there and look at the hardware section on how 
 
 ## but what is Soft-Power2-MPPT?
 It is a **self-contained** WiFi network enabled MPPT controller with:
-- a powerful dashboard in the Internet, 
-- statistics and long term plotting abilities.
+- a powerful dashboard in the Internet, accessible from everywhere,
+- statistics and long term plotting abilities,
 - running on various generally available low-cost DC/DC converters without any "cable spaghetti".
 
 The whole solution is working completely self-contained: 
@@ -35,7 +35,7 @@ The whole solution is working completely self-contained:
 - no database to maintain,
 - nothing else to program,
 - no MQTT broker involved
-- no Grafan to configure.
+- no Grafana to configure.
 
 The dashboards are running in the cloud at http://thinger.io, where you can create an account free of charge for up to two devices.
 You can create there very powerful dashboards interactively, and modify them on the fly.
