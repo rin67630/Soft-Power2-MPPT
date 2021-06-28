@@ -4,13 +4,14 @@ In that first project I have been using small DC-DC buck converters and controle
 While the injection technique where working quite good, the tiny buck converters have shown to be very prone to failure in the harsh outside environment.  
 So I decided to re-launch the project with more robust hardware.   
 
-Juntek and Drok (maybe others) sell some interesting cheap programmable buck converter modules e.g.:
-20-100W panel class upto 38Vmp:  
-- Buck3603        (36V/3A buck converter) https://www.aliexpress.com/item/32872687512.html
-100W-200W panel class up to 60Vmp:  
-- Drok low Power  (60V/8A buck converter) https://www.aliexpress.com/item/32862110549.html
-200W-400V panel class up to 75VVmp:  
-- Drok high power (80V/12A buck converter) https://www.aliexpress.com/item/32863179021.html  
+Juntek and Drok (maybe others) sell some interesting cheap but good programmable buck converter modules e.g.:  
+-Juntek B3603 for 20-100W panel class upto 30Vmp (36V/3A buck converter):  
+https://www.aliexpress.com/item/32872687512.html
+- Drok D6008 for 100W-200W for panel class up to 48Vmp (60V/8A buck converter) 
+https://www.aliexpress.com/item/32862110549.html  
+- Drok D6012 for 200W-400V panel class up to 75VVmp (80V/12A buck converter) 
+https://www.aliexpress.com/item/32863179021.html  
+
 *(links only given to identify the modules, you are encouraged to procure the devices from your favourite source)  
 
 The project began with https://github.com/rin67630/Drok-Juntek-on-steroids, from which this repository is a fork.  
@@ -21,7 +22,6 @@ Drok-Juntek-on-Steroids is getting a universal framework to build various soluti
 and much more...  
 You are encouraged to have a look there and look at the hardware section on how to build your own device.  
 (A bit of soldering is required. I expect to get soon a PCB to simplify the wiring.)
- 
 
 ## but what is Soft-Power2-MPPT?
 It is a **self-contained** WiFi network enabled MPPT controller with:
