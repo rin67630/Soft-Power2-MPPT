@@ -1,7 +1,7 @@
 # Soft Power2 MPPT.
 this is a reload of my project https://github.com/rin67630/Soft-Power-MPPT.  
-In that first project I have been using small DC-DC buck converters and controled them by injecting a smoothed PWM signal into their voltage potentiometer.  
-While the injection technique where working quite good, the small buck converters have shown to be very prone to failure.  
+In that first project I have been using small DC-DC buck converters and controled them by injecting a smoothed PWM signal into their voltage potentiometer to build a WiFi enabled MPPT controller.  
+While the injection technique where working quite good, the tiny buck converters have shown to be very prone to failure in the harsh outside environment.  
 So I decided to re-launch the project with more robust hardware.   
 
 Juntek and Drok (maybe others) sell some interesting cheap programmable buck converter modules e.g.:
