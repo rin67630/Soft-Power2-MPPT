@@ -5,11 +5,11 @@ While the injection technique where working quite good, the tiny buck converters
 So I decided to re-launch the project with more robust hardware.   
 
 Juntek and Drok (maybe others) sell some interesting cheap but good programmable buck converter modules e.g.:  
--Juntek B3603 for 20-100W panel class upto 30Vmp (36V/3A buck converter):  
-https://www.aliexpress.com/item/32872687512.html
-- Drok D6008 for 100W-200W for panel class up to 48Vmp (60V/8A buck converter) 
+-Juntek B3603 for 20-100W panel class upto 30Vmp (36V/3A buck converter):   
+https://www.aliexpress.com/item/32872687512.html  
+- Drok D6008 for 100W-200W for panel class up to 48Vmp (60V/8A buck converter)  
 https://www.aliexpress.com/item/32862110549.html  
-- Drok D6012 for 200W-400V panel class up to 75VVmp (80V/12A buck converter) 
+- Drok D6012 for 200W-400V panel class up to 75VVmp (80V/12A buck converter)   
 https://www.aliexpress.com/item/32863179021.html  
 
 *(links only given to identify the modules, you are encouraged to procure the devices from your favourite source)  
