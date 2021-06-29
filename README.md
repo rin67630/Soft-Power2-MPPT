@@ -4,7 +4,7 @@ In that first project I have been using small DC-DC buck converters and controle
 While the injection technique where working quite good, the tiny buck converters have shown to be very prone to failure in the harsh outside environment.  
 So I decided to re-launch the project with more robust hardware.   
 
-Juntek and Drok (maybe others) sell some interesting cheap but good programmable buck converter modules e.g.:  
+Juntek and Drok (maybe others) sell some interesting cheap but good programmable buck converter modules e.g.:   
 -Juntek B3603 for 20-100W panel class upto 30Vmp (36V/3A buck converter):   
 https://www.aliexpress.com/item/32872687512.html  
 - Drok D6008 for 100W-200W for panel class up to 48Vmp (60V/8A buck converter)  
