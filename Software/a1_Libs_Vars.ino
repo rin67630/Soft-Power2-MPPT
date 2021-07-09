@@ -52,6 +52,8 @@
 #define ADS_IOUT   ADS1115_COMP_1_GND
 #define ADS_VIN    ADS1115_COMP_2_GND
 #define TFT_BL     0  // dummy
+#define BUTTON_UP   32
+#define BUTTON_DOWN 33
 
 #define PWM_V      12 // Pin SD0  (Vpwm)
 #define PWM_I      14 // Pin SD1  (Ipwm) 
