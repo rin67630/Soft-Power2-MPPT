@@ -9,7 +9,9 @@ void displayRun()
     ++ displayPage;
     cycleDisplay = false;
     if (displayPage >= 7) displayPage = 7;
+#ifdef BOARD_IS_TTGO 
     tft.fillScreen(TFT_BLACK);
+#endif
   }
 
   if (not digitalRead(BUTTON_DOWN) || (not buttonPressed && encoderChanged < 0))
@@ -18,7 +20,9 @@ void displayRun()
     -- displayPage;
     cycleDisplay = false;
     if (displayPage < 0 ) displayPage = 0;
+#ifdef BOARD_IS_TTGO    
     tft.fillScreen(TFT_BLACK);
+#endif
   }
 
 #ifdef BOARD_IS_TTGO  // TTGO e_SPI TFT 240*135 pixel
