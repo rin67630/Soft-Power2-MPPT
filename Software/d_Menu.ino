@@ -31,42 +31,57 @@ void menuRun()
     // *** Actions***
     case '0': //Display mode 0
       displayPage = 0;
-      tft.fillScreen(TFT_BLACK);
+
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("Off\n");
       break;
     case '1': //Display mode 1
       cycleDisplay = false;
       displayPage = 1;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("D=1\n");
       break;
     case '2': //Display mode 2
       cycleDisplay = false;
       displayPage = 2;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("D=2\n");
       break;
     case '3': //Display mode 3
       cycleDisplay = false;
       displayPage = 3;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("D=3\n");
       break;
     case '4': //Display mode 4
       cycleDisplay = false;
       displayPage = 4;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("D=4\n");
       break;
     case '5': //Display mode 5
       cycleDisplay = false;
       displayPage = 5;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("D=5\n");
       break;
     case '9': //Cycle Displays
       cycleDisplay = true;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("Cycling displays\n");
       break;
     case '%':  //toggle between coarse/fine settings for "+,-,<,>"
@@ -126,7 +141,9 @@ void menuRun()
       persistence.AhMode  ++;
       if (persistence.AhMode  >= 2) persistence.AhMode  = 0;
       displayPage = 1;
-      tft.fillScreen(TFT_BLACK);
+#ifdef BOARD_IS_TTGO 
+    tft.fillScreen(TFT_BLACK);
+#endif
       Console1.printf ("AhMode  changed to %i \n", persistence.AhMode );
       break;
     // ***One shot Reports**
