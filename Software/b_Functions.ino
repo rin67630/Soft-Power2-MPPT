@@ -17,7 +17,7 @@ ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS)
 //ThingerConsole console(thing);
 
 #ifdef BOARD_IS_WEMOS
-SSD1306Wire display(0x3c, OLED_SCL, OLED_SDA);                  //OLED 128*64 soldered
+SSD1306Wire display(0x3c, OLED_SDA, OLED_SCL);                  //OLED 128*64 soldered
 #endif
 
 #ifdef BOARD_IS_TTGO
