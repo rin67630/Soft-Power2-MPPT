@@ -19,6 +19,10 @@
 #define FB_Vin_BIAS 0.0000
 #define FB_Vin_STEP 29.8000
 #define FB_Vin_RES  33.5570
+
+#define FB_Iin_BIAS	14.0000
+#define FB_Iin_STEP	39.0323
+#define FB_Iin_RES 	2.5620
   
 #define FB_Vout_BIAS  0.0000
 #define FB_Vout_STEP  29.168
