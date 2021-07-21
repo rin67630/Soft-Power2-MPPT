@@ -32,6 +32,9 @@
 #define FB_Iout_STEP  14.1250
 #define FB_Iout_RES 70.7965
 
+#define FAN_AMPS_0   2
+#define FAN_AMPS_100 8 
+
 
 #define FB_Vout_PIN  ADS1115_COMP_2_GND
 #define FB_Iout_PIN  ADS1115_COMP_3_GND
