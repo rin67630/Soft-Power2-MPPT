@@ -43,6 +43,6 @@
 #define FB_Iin_PIN   ADS1115_COMP_0_GND
 #define PWM_Iout_PIN 4
 #define PWM_Vout_PIN 5
-#define ENA_PIN   6
-#define FAN_PIN   7
+#define ENA_PIN   12
+#define FAN_PIN   2
 #define CCCV_PIN  N/A
