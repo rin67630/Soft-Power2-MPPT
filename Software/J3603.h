@@ -28,6 +28,9 @@
 #define FB_Vin_STEP  62.20
 #define FB_Vin_RES   16.08
 
+#define FB_Iin_BIAS	14.0000
+#define FB_Iin_STEP	39.0323
+#define FB_Iin_RES 	2.5620
 
 #define FB_Vout_PIN  ADS1115_COMP_3_GND
 #define FB_Iout_PIN  ADS1115_COMP_2_GND
