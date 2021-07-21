@@ -41,3 +41,6 @@
 #define ENA_PIN   6
 #define FAN_PIN   N/A
 #define CCCV_PIN  7
+
+#define FAN_AMPS_0   2
+#define FAN_AMPS_100 3 
