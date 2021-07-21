@@ -14,4 +14,16 @@ Enter sJ to get the job timing every second. A regular timing looks like that:
 07:59:43.848 -> Seri:001 - 001
 07:59:43.848 -> Wifi:007 - 063
 ```
+if the wifi task takes longer than 100mS then there is obviously something wrong in your communication.
+Another cause could have been a wonky Internet connection.
 
+## I get the information in my dashboard but no trend
+Trends are stored in buckets.
+There is a line in a0_Optins to enable writing in buckets:
+```
+#define WRITE_BUCKETS         // comment out. if this is the second device
+```
+This line must be commented out, if you use a second device on the same account. 
+Only one device can write in buckets.
+
+If you have commented out that line for the main device also, you get no trend.
