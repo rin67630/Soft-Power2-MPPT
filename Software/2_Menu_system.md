@@ -42,19 +42,19 @@ The commands can be stacked: you may type ++++++++++++, ------, >>>>>, <<<<<<<<<
 
 ## Modes of Operation:
 
-These commands control different operation modes:  
+These commands control different operation modes:  (every time the letter is entered, the next mode will be activated)  
 
-'A' controls the Ah integration:  
+- 'A' controls the Ah integration:  
     "STOP" stops and resets the Ah integration  
     "RUN" lets  the Ah integratio until stooped  
     "DAILY"  lest the Ah integration, which is daily reset at 00:00  
 
-'O' controls the solar operation modes:  
+- 'O' controls the solar operation modes:  
    "MANU" the DC/DC controller runs according to output Voltage/Current setpoints.  
    "PVFX" like above + the output Current setpoint will be limited to control the input voltage to a fixed set point  
    "MPTT" like above + the panel voltage set point track the maximum power point.  
 
-"C" Controls the charger mode of operation  (Work in progress)  
+- "C" Controls the charger mode of operation  (Work in progress)  
    "NIGH", Night mode, no charge  
    "RECO", Recover from discharged battery  
    "BULK", Bulk charge  
