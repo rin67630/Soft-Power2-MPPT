@@ -32,7 +32,7 @@ void menuRun()
     case '0': //Display mode 0
       displayPage = 0;
 
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD 
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("Off\n");
@@ -40,7 +40,7 @@ void menuRun()
     case '1': //Display mode 1
       cycleDisplay = false;
       displayPage = 1;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("D=1\n");
@@ -48,7 +48,7 @@ void menuRun()
     case '2': //Display mode 2
       cycleDisplay = false;
       displayPage = 2;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD 
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("D=2\n");
@@ -56,7 +56,7 @@ void menuRun()
     case '3': //Display mode 3
       cycleDisplay = false;
       displayPage = 3;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD 
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("D=3\n");
@@ -64,7 +64,7 @@ void menuRun()
     case '4': //Display mode 4
       cycleDisplay = false;
       displayPage = 4;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD 
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("D=4\n");
@@ -72,14 +72,14 @@ void menuRun()
     case '5': //Display mode 5
       cycleDisplay = false;
       displayPage = 5;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD 
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("D=5\n");
       break;
     case '9': //Cycle Displays
       cycleDisplay = true;
-#ifdef BOARD_IS_TTGO 
+#ifdef DISPLAY_IS_LCD
     tft.fillScreen(TFT_BLACK);
 #endif
       Console1.printf ("Cycling displays\n");
@@ -88,34 +88,38 @@ void menuRun()
       coarse = not coarse;
       Console1.printf ("%s \n", coarse ? "coarse" : "fine");
       break;
-    case '+': //Increase Volt
-      //PWM_SetVout += 10;
-      //Console1.printf ("+1 Vinj=%i Vadc=%i\n", PWM_SetVout, ADC_VoutRaw);
+    case '+': //Increase Vout Setpoint
       if (coarse) dashboard.SetVout += 0.1;
       if (not coarse) dashboard.SetVout += 0.01;
       Console1.printf ("%s Volt=%06.3f\n", coarse ? "++" : "+", dashboard.SetVout);
       break;
-    case '-': //Reduce Volt
+    case '-': //Reduce Vout Setpoint
       //PWM_SetVout -= 10;
       //Console1.printf ("-1 Vinj=%i Vadc=%i\n", PWM_SetVout, ADC_VoutRaw);
       if (coarse && dashboard.SetVout >= 0.1) dashboard.SetVout -= 0.1;
       if (not coarse && dashboard.SetVout >= 0.01) dashboard.SetVout -= 0.01;
       Console1.printf ("%s Volt=%06.3f\n", coarse ? "--" : "-", dashboard.SetVout);
       break;
-    case '>': //Increase Amp
-      //PWM_SetIout += 10;
-      //Console1.printf ("+1 Cinj=%i Iadc=%i\n", PWM_SetIout,ADC_IoutRaw);
+    case '>': //Increase Iout Setpoint
       if (coarse) dashboard.SetIout += 0.05;
       if (not coarse) dashboard.SetIout += 0.001;
       Console1.printf ("%s Amp=%06.3f\n", coarse ? "++" : "+", dashboard.SetIout);
       break;
-    case '<': //Reduce Amp
-      //PWM_SetIout -= 10;
-      //Console1.printf ("+1 Cinj=%i Iadc=%i\n", PWM_SetIout,ADC_IoutRaw);
+    case '<': //Reduce Iout Setpoint
       if (coarse && dashboard.SetIout >= 0.05) dashboard.SetIout -= 0.05;
       if (not coarse && dashboard.SetIout >= 0.001) dashboard.SetIout -= 0.001;
       Console1.printf ("%s Amp=%06.3f\n", coarse ? "--" : "-", dashboard.SetIout);
       break;
+    case '}': //Increase Vin Setpoint
+      if (coarse) dashboard.SetVin += 0.05;
+      if (not coarse) dashboard.SetVin += 0.001;
+      Console1.printf ("%s Vin=%06.3f\n", coarse ? "++" : "+", dashboard.SetVin);
+      break;
+    case '{': //Reduce Vin Setpoint
+      if (coarse && dashboard.SetVin >= 0.05) dashboard.SetVin -= 0.05;
+      if (not coarse && dashboard.SetVin >= 0.001) dashboard.SetVin -= 0.001;
+      Console1.printf ("%s Vin=%06.3f\n", coarse ? "--" : "-", dashboard.SetVin);
+      break;      
     case 'Z':  // Write persistence and Reset
       for ( int i = 0; i < sizeof(persistence); ++i ) EEPROM.write ( i + 100,  persistence_punning[i] );
       EEPROM.commit();
@@ -131,20 +135,29 @@ void menuRun()
       Ahout = Whout = 0;
       persistence.CycleVSum = persistence.CycleISum = persistence.CycleSamples = 0;
       persistence.initial_voltage = dashboard.Vout;
+#if defined (THINGER)
       thing.stream("status");
+#endif
       break;
     case 'j':  //Reset Job Maxes
       Console1.printf ("\nReset Job Timings \n");    
       for (int i = 14; i < 21; i++) RunMillis[i] = 0;  // Reset job timing stats
       break;
-    case 'C': //Ah Cycle 0-1-2  Stop, Run, Daily
+    case 'C': //Charger modes "NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"
+      dashboard.ChrgPhase  ++;
+      if (dashboard.ChrgPhase >= 13) dashboard.ChrgPhase  = 0;
+      Console1.print ("Char.Mode changed to " + ChrgPhase_description[dashboard.ChrgPhase] +"\n" );
+      break;
+    case 'A': //Ah Cycles "STOP", "RUN", "DAILY
       persistence.AhMode  ++;
-      if (persistence.AhMode  >= 2) persistence.AhMode  = 0;
-      displayPage = 1;
-#ifdef BOARD_IS_TTGO 
-    tft.fillScreen(TFT_BLACK);
-#endif
-      Console1.printf ("AhMode  changed to %i \n", persistence.AhMode );
+      if (persistence.AhMode  >= 3) persistence.AhMode  = 0;
+      Runtime = AhCycle_description[persistence.AhMode];
+      Console1.print ("Ah.Mode changed to " + AhCycle_description[persistence.AhMode] +"\n" );
+      break;
+    case 'O': //Operation Modes "MANU", "PVFX", "MPPT"
+      dashboard.CtrlMode  ++;
+      if (dashboard.CtrlMode  >= 3) dashboard.CtrlMode  = 0;
+      Console1.print ("Oper. changed to " + CtrlMode_description[dashboard.CtrlMode] +"\n" );
       break;
     // ***One shot Reports**
     case 'S':  //Summary Report
@@ -155,7 +168,11 @@ void menuRun()
       Console1.printf ("\nDebug Report\n");
       serialPage = 'D';
       break;
-    case 'J':  //Debug Report
+    case 'X':  //Debug Report
+      Console1.printf ("\neXcel Calibration Report\n");
+      serialPage = 'X';
+      break;
+case 'J':  //Debug Report
       Console1.printf ("\nJob Timing\n");
       serialPage = 'J';
       break;

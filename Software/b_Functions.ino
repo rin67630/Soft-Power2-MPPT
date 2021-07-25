@@ -1,32 +1,32 @@
-// **************Macro for Timing******************
+//****** Macro for Timing *****
 #define runEvery(t) for (static uint16_t _lasttime;\
                          (uint16_t)((uint16_t)millis() - _lasttime) >= (t);\
                          _lasttime += (t))
 
-//************* Instanciations**********************
-
+//****** Instanciations ******
 WiFiUDP UDP; // Creation of wifi Udp instance
 
-#ifdef BLUETOOTH
-BluetoothSerial SerialBT;
-#endif
-
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1 , ROTARY_ENCODER_STEPS);
-
+#ifdef THINGER
 ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS);
-//ThingerConsole console(thing);
-
-#ifdef BOARD_IS_WEMOS
-SSD1306Wire display(0x3c, OLED_SDA, OLED_SCL);                  //OLED 128*64 soldered
 #endif
 
-#ifdef BOARD_IS_TTGO
+#ifdef CONTR_IS_WEMOS
+SSD1306Wire display(0x3c, I2C_SCL, I2C_SDA);                  //OLED 128*64 soldered
+#endif
+
+#ifdef DISPLAY_IS_LCD
 TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 #define TFT_GREY     0x5AEB // better Grey
 #define TFT_VERMILON 0xFA60 // better Orange
 #endif
 
+#ifdef ADC_IS_ADS1115
 ADS1115_WE adc(0x48);
+#endif
+
+#ifdef ROTARY
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1 , ROTARY_ENCODER_STEPS);
+#endif
 
 #ifdef FET_EXTENSION
 ADS1115_WE adc2(0x49);
@@ -35,8 +35,11 @@ PCF8574 pcf8574(0x39); //PCF address, initial value
 //pcf8574.begin();// Start library
 #endif
 
+#ifdef BLUETOOTH
+BluetoothSerial SerialBT;
+#endif
 
-
+// ***** Functions ******
 void rotary_onButtonClick()
 {
   static unsigned long lastTimePressed = 0;
@@ -44,8 +47,8 @@ void rotary_onButtonClick()
   if (millis() - lastTimePressed < 500)
   {
     buttonPressed = not buttonPressed;
-    Serial.print("buttonPressed is ");
-    Serial.println(buttonPressed);
+    Console4.print("buttonPressed is ");
+    Console4.println(buttonPressed);
   }
   //  Serial.print("button pressed for ");
   //  Serial.println(millis() - lastTimePressed);
@@ -63,7 +66,6 @@ void rotary_loop()
 }
 
 // ************WiFi Managemement****************
-
 void getWiFi()
 {
   if (WiFi.status() != WL_CONNECTED)

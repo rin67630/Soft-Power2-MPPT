@@ -1,19 +1,26 @@
 // *** libraries***
-//#define _DISABLE_TLS_
-#include <Wire.h>          // from Library (I2C)
+//#define _DISABLE_TLS_      (Workaround to circumvent a bug in TLS handling for Thinger.io versions >2.15, better use 2.14)
 #include <ArduinoOTA.h>    // from Library
 #include <WiFi.h>          // built-in
 #include <WiFiUdp.h>       // built-in
 #include "time.h"          // built-in
 #include <FS.h>            // built-in
 #include <ThingerESP32.h>  // from Library (Thinger)
-//#include <ThingerConsole.h>// from Library (Thinger) Hmm... does that work?
 #include <EEPROM.h>        // to be replaced by preferences
-#include <ADS1115_WE.h>    // from Library (Wollewald)
-#include <Preferences.h>   //built-in  to use: https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
-#include "AiEsp32RotaryEncoder.h"
-#include "PCF8574.h"   // from library Renzo Mischienti/PCF8574 
 
+// *** Optional libraries ***
+ 
+#ifndef CONTR_IS_HELTEC
+#include <Wire.h>          // from Library (I2C)
+#endif
+
+#ifdef ROTARY
+#include "AiEsp32RotaryEncoder.h"
+#endif
+
+#ifdef FET_EXTENSION
+#include "PCF8574.h"   // from library Renzo Mischienti/PCF8574 
+#endif
 
 #ifdef BLUETOOTH
 #include "BluetoothSerial.h"
@@ -22,63 +29,50 @@
 #endif
 #endif
 
+#ifdef ADC_IS_ADS1115
+#include <ADS1115_WE.h>    // from Library (Wollewald)
+#endif
+
+#ifdef ADC_IS_INA226
+#include <INA.h>    
+#endif
+
+#ifdef CONTR_IS_HELTEC
+#include <heltec.h>
+#include "Heltec_LoRa.h">
+#endif
+
+#ifdef CONTR_IS_TTGO
+#include <TFT_eSPI.h> 
+#include "TTGO_LCD.h"
+#include <SPI.h>
+#endif
+
+#ifdef CONTR_IS_WEMOS 
+#include <SSD1306Wire.h>  // from https://github.com/ThingPulse/esp8266-oled-ssd1306/
+#include "Wemos32_OLED.h"
+#endif
+
+#ifdef DISPLAY_IS_OLED
+#define OLED_W 128
+#define OLED_H 64
+#endif
+
+#ifdef DISPLAY_IS_LCD
+#define TFT_W 160
+#define TFT_H 128
+#endif
+
 // Solar charger CtrlMode  modes
 #define MANU         0  // fix voltage 
 #define PVFX         1  // fix panel voltage
 #define MPPT         2  // maximum power point tracking
 #define AUTO         3  // automatic
 
-#define ROTARY_ENCODER_A_PIN      25 // Rotary Encoder A
-#define ROTARY_ENCODER_B_PIN      26 // Rotary Encoder B
-#define ROTARY_ENCODER_BUTTON_PIN 33 // Rotary Encoder Switch
-#define ROTARY_ENCODER_STEPS      4  // Rotary Encoder Delta (Steps) not an input!
-
 #define UDP_TX_PACKET_MAX_SIZE 128 //increase UDP size
 #define DST_MN        60
 #define GMT_OFFSET_SEC 3600 * TZ
 #define DAYLIGHT_OFFSET_SEC 60 * DST_MN
-
-#ifdef BOARD_IS_WEMOS
-#include <SSD1306Wire.h>  // from https://github.com/ThingPulse/esp8266-oled-ssd1306/
-#define OLED_W 128
-#define OLED_H 64
-#define OLED_SCL   5  // D1 GPIO5 for I2C (Wire) System Clock
-#define OLED_SDA   4  // D2 GPIO4 for I2C (Wire) System Data
-#define OLED_RST   0  //    GPIO0
-#define ADC_VOUT   36
-#define ADC_IOUT   39
-#define ADC_VIN    38
-#define TFT_BL     0  // dummy
-#define BUTTON_UP   32
-#define BUTTON_DOWN 33
-
-#define PWM_V      12 // Pin SD0  (Vpwm)
-#define PWM_I      14 // Pin SD1  (Ipwm) 
-#endif
-
-#ifdef BOARD_IS_TTGO
-#include <TFT_eSPI.h> // Hardware-specific library
-#include <SPI.h>
-#define TFT_W 160
-#define TFT_H 128
-#define OLED_SCL     22  // GPIO22 for I2C (Wire) System Clock
-#define OLED_SDA     21  // GPIO21 for I2C (Wire) System Data
-#define TFT_BL       4  // Display backlight control pin
-#define SCL          22  // D1 GPIO22 for I2C (Wire) System Clock
-#define SDA          21  // D2 GPIO21 for I2C (Wire) System Data
-#define RST          0   //    GPIO0
-#define MOSI         23  //    GPIO for SPI Master Out
-#define MISO         19  //    GPIO for SPI Master In
-#define SCLK         18  //    GPIO for SPI System Clock
-#define BUTTON_UP    35
-#define BUTTON_DOWN  0
-#define ADC_VOUT     36
-#define ADC_IOUT     39
-#define ADC_VIN      38
-
-#define PWM_V        15  // Pin GPIO15  (Vpwm)
-#define PWM_I        13  // Pin GPIO13  (Ipwm) 
-#endif
 
 //***Variables for Time***
 tm*        timeinfo;                 //localtime returns a pointer to a tm struct static int Second;
@@ -177,8 +171,9 @@ float Ahout;           //Ah of the current hour
 float Vavgout;          //Avg voltage in hour
 
 // Dashboard
-String CtrlMode_description[] = {"MANU", "PVFX", "MPPT"}; // for dashboard.CtrlMode
+String CtrlMode_description[] = {"Manu", "PVFx", "MPPT"}; // for dashboard.CtrlMode
 String ChrgPhase_description[] = {"NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"}; // for dashboard.ChrgPhase
+String AhCycle_description[] = {"Stop", "Run", "Daily"}; // for dashboard.CtrlMode
 
 struct dashboard {
   // Measures
