@@ -34,7 +34,41 @@ the menu answers with ++ Volt=14.500 or + Volt=14.510 depending if it was a coar
 - '>' or '<' increases or decreases in coarse steps the setpoint of the output current
 the menu answers with ++  Amp=00.650 or +  Amp=00.640 depending if it was a coarse or a fine step.
 
+- '}' or '{' increases or decreases in coarse steps the setpoint of the input voltaage regulation (in case of soalr input)
+the menu answers with ++  Amp=00.650 or +  Amp=00.640 depending if it was a coarse or a fine step.
+
+
 The commands can be stacked: you may type ++++++++++++, ------, >>>>>, <<<<<<<<<<< then enter and it will increasedecrease the corresponding number of steps.
+
+## Modes of Operation:
+
+These commands control different operation modes:  
+
+'A' controls the Ah integration:  
+    "STOP" stops and resets the Ah integration  
+    "RUN" lets  the Ah integratio until stooped  
+    "DAILY"  lest the Ah integration, which is daily reset at 00:00  
+
+'O' controls the solar operation modes:  
+   "MANU" the DC/DC controller runs according to output Voltage/Current setpoints.  
+   "PVFX" like above + the output Current setpoint will be limited to control the input voltage to a fixed set point  
+   "MPTT" like above + the panel voltage set point track the maximum power point.  
+
+"C" Controls the charger mode of operation  (Work in progress)  
+   "NIGH", Night mode, no charge  
+   "RECO", Recover from discharged battery  
+   "BULK", Bulk charge  
+   "ABSO", Absorption charge  
+   "FLOA", Float charge    
+   "EQUA", Equalization charge  
+   "PAUS", Pause charging  
+   Additional non selectable errors  
+   "OVER", Overcharge  
+   "DISC", Load Disconnection  
+   "NOBA", No Battery  
+   "NOPA", No Panel  
+   "EXAM" 
+
 
 ## Setting the pace for periodical reports
 The pace for next 2 reports is given with a lower case prefix:  
