@@ -136,12 +136,18 @@ Thu Apr 15 15:49:19 2021
 ### 'T': // Enter time
 this command is only valued off-line, with an Internet connection the time is given from the NTP server.
 
-
 ## Display control commands
 You will be able to control which information is displayed on the TFT Display:  
 - '0' switch of the display
-- '1' current energy display
-- '2' Ah display ( current and the last two hours ) (to come soon)
-- '3' Ah display ( scanning the last day ) (to come soon)
-- '4' and '5' (to come soon)
+- '1' Volt /Ampere  Display (output)
+- '2' Volt /Ampere  Display (intput)
+- '3' Output Voltage display (with set point control)
+- '3' Output Current display (with set point control)
+- '4' Input Voltage display  (with set point control)
+- '5' Power Supply Display
+- '6' Battery Display
+- '7' Statistics display
+
+- '9' Cycling throughh the displays
+
  
