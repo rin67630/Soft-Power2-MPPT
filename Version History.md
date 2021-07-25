@@ -4,6 +4,7 @@ this major version supports beside the TTGO development board ( which remains th
 that is planned to deliver long-range radio transmission.
 
 The different hardware specific files are provided in a folder "SoftPower_HAL_Files" that should be moved underneath the library folder, to be discovered upon compiling.
+Please adapt your a0_Options to the new structure.
 
 This version provides improved on-board screens, better serial communication, and has solved a few issues:  
 
