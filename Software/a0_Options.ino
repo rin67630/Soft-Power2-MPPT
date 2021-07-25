@@ -48,32 +48,33 @@
 #define TZ            1               // (utc+) TZ in hours
 
 
-// Presets according to personal projects
+// Presets according to personal projects Adapt to your devices farm...
+
 #ifdef CONV_IS_D6012             // DROK 6012 Motherboard interface parameters
 #include "D6012.h"
 #define DEVICE_NAME      "SteroidsADS"
-#define THINGER_USERNAME "SoftPower1"      // "SoafPower1  SoftPower1" 
+#define THINGER_USERNAME "SoftPower1"    
 //#define WRITE_BUCKETS    // comment out. if this is the second device)
 #endif
 
 #ifdef CONV_IS_J3603             //Juntek B3603 small DC-DC converter
 #include "J3603.h"
 #define DEVICE_NAME      "Steroids3603"
-#define THINGER_USERNAME "SoafPower1"      // "SoafPower1  SoftPower1" 
+#define THINGER_USERNAME "SoafPower1"      
 #define WRITE_BUCKETS    // comment out. if this is the second device)
 #endif
 
 #ifdef CONV_IS_D6008             // DROK 6008 Motherboard interface parameters
 #include "D6008.h"
 #define DEVICE_NAME      "Steroids6008"
-#define THINGER_USERNAME "SoftPower1"      // "SoafPower1  SoftPower1" 
+#define THINGER_USERNAME "SoftPower1"     
 #define WRITE_BUCKETS     // comment out. if this is the second device)
 #endif
 
 #ifdef CONV_IS_SIMULATED             // Use to test with stock ESP32 without periphery
 #include "Dummy.h"
 #define DEVICE_NAME      "SteroidsADS"
-#define THINGER_USERNAME "SoftPower1"      // "SoafPower1  SoftPower1" 
+#define THINGER_USERNAME "SoftPower1"      
 //#define WRITE_BUCKETS  // comment out. if this is the second device)
 
 #endif
