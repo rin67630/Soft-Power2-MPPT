@@ -19,7 +19,7 @@ This will save a file Soft-Power2-MPPT-main.zip.
 From that compressed file, extract the folder "Software" and copy it into your Arduino working space, if you and modified it, it's Documents/Arduino  
 Rename that folder SoftPowerMPPT.  
 You will now find the project in File/Sketchbook/SoftPowerMPPT and after starting, it you will find all tabs present.  
-From that compressed file, extract the folder "SoftPower_HAL_files" and copy it into your Arduino working space/libraries.
+From that compressed file, extract the folder "SoftPower_HAL_files" and copy it into your Arduino working space/libraries. (this folder contains the hardware-specific .h files, which can be edited with the Arduion IDE upon invoking "SoftPower_HAL_Files.ino" (there is nothing to compile in that folder)-
 
 If later you just need to update some tabs individually, you just can copy the content directly into the Arduino IDE.
 
