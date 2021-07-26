@@ -39,7 +39,7 @@
 
 #ifdef CONTR_IS_HELTEC
 #include <heltec.h>
-#include "Heltec_LoRa.h">
+#include <Heltec_LoRa.h>
 #endif
 
 #ifdef CONTR_IS_TTGO
