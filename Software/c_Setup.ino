@@ -14,8 +14,6 @@ void setup()
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.setFont(ArialMT_Plain_10);
-  display.drawString(0, 10, "Display Init");
-  Console4.print("Display Init\n");
   display.display();
   uint64_t chipId=ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
   Serial.printf("ESP32ChipID=%04X ",(uint16_t)(chipId>>32));//print High 2 bytes
@@ -508,5 +506,6 @@ Console4.printf("Connecting to %s/n ", WIFI_SSID);
     dashboard.SetVin = dashboard.ConVin = PANEL_MPP;
     lastADC_Vout = lastADC_Iout = 500;
   }
+  Console4.println("Ready to accept serial commands..." );
 }
 //end Setup
