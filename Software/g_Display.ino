@@ -147,13 +147,13 @@ void displayRun()
       tft.setCursor(160, 85, 4); tft.print("SetP.");
       break;
 
-    case 5 :     // Power Supply Display
+    case 5 :     // PV Display
       // Setpoint Highlight
       if (buttonPressed)
       {
         tft.setTextColor(TFT_BLACK, TFT_WHITE); tft.setCursor(125, 0, 2);  // highlight CC
         sprintf(charbuff, "%05.2fA ", dashboard.SetIout) ;  tft.print(charbuff);
-        dashboard.SetIout += float(encoderChanged * abs(encoderChanged)) / 100;
+        dashboard.SetVin += float(encoderChanged * abs(encoderChanged)) / 100;
       }
 
       // Page name
