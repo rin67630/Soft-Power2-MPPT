@@ -55,6 +55,7 @@ void rotary_onButtonClick()
   lastTimePressed = millis();
 }
 
+#ifdef ROTARY
 void rotary_loop()
 {
   //dont print anything unless value changed
@@ -64,6 +65,7 @@ void rotary_loop()
     return;
   }
 }
+#endif
 
 // ************WiFi Managemement****************
 void getWiFi()
@@ -90,7 +92,7 @@ void getWiFi()
     WiFi.setHostname(DEVICE_NAME);
   }
   ip = WiFi.localIP();
-  Console4.print(" Done!\nRRSI= ");   Console4.print(WiFi.RSSI());
+  Console4.print("\nDone: RRSI= ");   Console4.print(WiFi.RSSI());
   sprintf(charbuff, "dB, IP= %03d . %03d . %03d . %03d \n",  ip[0], ip[1], ip[2], ip[3]);  Console4.printf(charbuff);
 }
 
