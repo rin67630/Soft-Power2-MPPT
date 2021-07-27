@@ -1,13 +1,6 @@
 void setup()
 {
-  // Serial initialisation
-  Serial.begin (SERIAL_SPEED); // On USB port
-  // Serial.setDebugOutput(true);
-
-  Console4.printf("Resetted! \nDevice name: %s \n", DEVICE_NAME);
-  Console4.printf("ESP-Karajan framework at work, Serial @ %u Baud\n", SERIAL_SPEED);
-
-  #ifdef CONTR_IS_HELTEC
+#ifdef CONTR_IS_HELTEC
   auto &display = *(Heltec.display);
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
   display.flipScreenVertically();
@@ -15,20 +8,26 @@ void setup()
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.setFont(ArialMT_Plain_10);
   display.display();
-  uint64_t chipId=ESP.getEfuseMac();//The chip ID is essentially its MAC address(length: 6 bytes).
-  Serial.printf("ESP32ChipID=%04X ",(uint16_t)(chipId>>32));//print High 2 bytes
-  Serial.printf("%08X\n",(uint32_t)chipId);//print Low 4b
+  uint64_t chipId = ESP.getEfuseMac(); //The chip ID is essentially its MAC address(length: 6 bytes).
+  Serial.printf("ESP32ChipID=%04X ", (uint16_t)(chipId >> 32)); //print High 2 bytes
+  Serial.printf("%08X\n", (uint32_t)chipId); //print Low 4b
   delay(5000);
-  #endif
-  Wire.begin(I2C_SDA, I2C_SCL);
 
- 
-    
+#else
+  // Serial initialisation
+  Serial.begin (SERIAL_SPEED); // On USB port
+  // Serial.setDebugOutput(true);
+#endif
+
+  Wire.begin(I2C_SDA, I2C_SCL);
+  Console4.printf("\n\n\n\n\nDevice %s resetted!\n", DEVICE_NAME);
+  Console4.printf("ESP-Karajan framew. ready: Serial @ %u Baud\n", SERIAL_SPEED);
+
   Console4.printf("Initializing IO \n");
   pinMode(BUTTON_UP, INPUT_PULLUP);
   pinMode(BUTTON_DOWN, INPUT_PULLUP);
-  pinMode(ROTARY_ENCODER_A_PIN, INPUT);
-  pinMode(ROTARY_ENCODER_B_PIN, INPUT);
+  pinMode(ROTARY_ENCODER_A_PIN, INPUT_PULLDOWN);
+  pinMode(ROTARY_ENCODER_B_PIN, INPUT_PULLDOWN);
   pinMode(ROTARY_ENCODER_BUTTON_PIN, INPUT_PULLUP);
   pinMode(I2C_RST, OUTPUT);
   pinMode(ENA_PIN, OUTPUT);
@@ -47,7 +46,7 @@ void setup()
 #ifdef DISPLAY_IS_LCD
   ledcAttachPin(TFT_BL, 14);
 #endif
- 
+
 #ifdef FET_EXTENSION
   Console4.printf("Initializing FET_Ext \n");
   pcf8574.pinMode(P0, OUTPUT);
@@ -60,6 +59,7 @@ void setup()
   pcf8574.pinMode(P7, INPUT);
 #endif
 
+#ifdef ROTARY
   Console4.printf("Initializing ROT \n");
   rotaryEncoder.begin();
   rotaryEncoder.setup(
@@ -71,8 +71,9 @@ void setup()
   rotaryEncoder.setBoundaries(-10000, 10000, true); //minValue, maxValue, circleValues true|false (when max go to min and vice versa)
   rotaryEncoder.setEncoderValue(0);
   rotaryEncoder.disableAcceleration();
+#endif
 
-Console4.printf("Initializing ADC \n");
+  Console4.printf("Initializing ADC \n");
 #ifdef ADC_IS_ADS1115
   // Settings for ADC
   if (not adc.init())
@@ -83,7 +84,7 @@ Console4.printf("Initializing ADC \n");
     adc.setMeasureMode(ADS1115_SINGLE);   //comment line/change parameter to change mode
   }
 #endif
- 
+
 #ifdef ADC_IS_ESP
   analogSetWidth(11);               // 11Bit resolution
   analogSetAttenuation(ADC_0db);    // 0=0db (0..1V) 1= 2,5dB; 2=-6dB (0..2V); 3=-11dB  0.2..2.6V ~linear
@@ -130,7 +131,7 @@ Console4.printf("Initializing ADC \n");
   display.display();
 #endif
 
-Console4.printf("Connecting to %s/n ", WIFI_SSID);
+  Console4.printf("Connecting to %s", WIFI_SSID);
   // Networking and Time
   WiFi.mode(WIFI_STA);
 
@@ -268,7 +269,7 @@ Console4.printf("Connecting to %s/n ", WIFI_SSID);
     };
 #endif
 
-// Radio button style processing with sliders: Slide value is integer, so take value and issue description out of String array
+    // Radio button style processing with sliders: Slide value is integer, so take value and issue description out of String array
 
     thing["AhMode "] = [](pson & in, pson & out) {
       if (in.is_empty())
@@ -281,7 +282,7 @@ Console4.printf("Connecting to %s/n ", WIFI_SSID);
       }
       out = persistence.AhMode ;
     };
-    
+
     thing["CtrlMode"]  = [](pson & in, pson & out)
     {
       if (in.is_empty())
