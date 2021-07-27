@@ -91,7 +91,7 @@ void getWiFi()
   }
   ip = WiFi.localIP();
   Console4.print(" Done!\nRRSI= ");   Console4.print(WiFi.RSSI());
-  sprintf(charbuff, "dB, IP= %03d . %03d %03d . %03d \n",  ip[0], ip[1], ip[2], ip[3]);  Console4.printf(charbuff);
+  sprintf(charbuff, "dB, IP= %03d . %03d . %03d . %03d \n",  ip[0], ip[1], ip[2], ip[3]);  Console4.printf(charbuff);
 }
 
 void myIP()
