@@ -8,9 +8,9 @@
 #define OLED_SCL    15  // GPIO22 for I2C (Wire) System Clock
 #define OLED_SDA     4  // GPIO21 for I2C (Wire) System Data
 
-#define ROTARY_ENCODER_A_PIN      36 // Rotary Encoder A
-#define ROTARY_ENCODER_B_PIN      37 // Rotary Encoder B
-#define ROTARY_ENCODER_BUTTON_PIN 38 // Rotary Encoder Switch
+#define ROTARY_ENCODER_A_PIN      22 // Rotary Encoder A
+#define ROTARY_ENCODER_B_PIN      23 // Rotary Encoder B
+#define ROTARY_ENCODER_BUTTON_PIN 17 // Rotary Encoder Switch
 #define ROTARY_ENCODER_STEPS      4  // Rotary Encoder Delta (Steps not an input!)
 
 #define BUTTON_UP     0   //Is also Prog button
