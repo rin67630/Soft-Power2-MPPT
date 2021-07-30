@@ -8,53 +8,53 @@ you may use the serial monitor functionality of the Arduino IDE, but can also us
 ## Boot Log
 When you start your power supply you will first get the boot log:
 ```
-22:08:28.803 -> Resetted! 
-22:08:28.803 -> Device name: SteroidsADS 
-22:08:28.803 -> ESP-Karajan framework at work, Serial @ 115200 Baud
-22:08:28.803 -> Try connecting to GW-FM-7390 
-22:08:29.979 -> . Done!
-22:08:30.027 -> RRSI= -49dB, IP= 192 . 168 188 . 076 
-22:08:32.101 -> Initializing Thinger, Username= SoftPower1
-22:08:35.026 -> Now is Thursday, 15 April 2021 22:08:36. Epoch =1618517316
+18:52:06.518 -> 
+18:52:06.518 -> Device SteroidsADS resetted!
+18:52:06.518 -> ESP-Karajan framew. ready: Serial @ 115200 Baud
+18:52:06.518 -> Initializing IO 
+18:52:06.518 -> Initializing PWM 
+18:52:06.518 -> Initializing ROT 
+18:52:06.518 -> Initializing ADC 
+18:52:06.518 -> Initializing DIS 
+18:52:07.790 -> Connecting to GW-FM-7390
+18:52:08.407 -> .
+18:52:08.455 -> Done: RRSI= -71dB, IP= 192 . 168 . 188 . 036 
+18:52:10.575 -> Initializing Thinger, Username= SoftPower1 
+18:52:13.122 -> 
+18:52:13.122 -> Now is Friday, 30 July 2021 18:52:14. Epoch =1627663934
+18:52:13.122 -> 
+18:52:15.109 -> Ready to accept serial commands...
+
 ```
 
 In order to put the maximum of functionality into scarce memory of the microcontroller, there is no verbose menu.  
 Instead you have a choice of single character commands, from which you can however enter several in one line, they will be executed in sequence.
 The single character menu enables also to use keypads with few function keys.  
 
-## Control commands
-From the serial menu, you can control several operations of Soft-Power.  
+With V3 I redesigned of the hardware/serial interface in a harmonized way:  
 
-- '%' toggle between small step changes  (10mV/10mA) and coarse steps (100mV/50mA)
-the menu answers with fine or coarse and keeps that setting until toggled again.
+The changes over the rotary encoder, the buttons up down and the serial interface are working similarly:
 
-- '+' or '-' increases or decreases in small steps the setpoint of the output voltage
-the menu answers with ++ Volt=14.500 or + Volt=14.510 depending if it was a coarse or a fine step.
+You can switch screens and enter set points or modes of operation.   
 
-- '>' or '<' increases or decreases in coarse steps the setpoint of the output current
-the menu answers with ++  Amp=00.650 or +  Amp=00.640 depending if it was a coarse or a fine step.
+## Screens changes.
+With the buttons Up Down or the rotary encoder you can change screens. 
+Screen number 0 is black screen (power save), 
+Screen number 9 is cycling every five seconds between 1-8  
+Over the serial interface you can enter directly the screen number 1-8 , this presets "display change",
 
-- '}' or '{' increases or decreases in coarse steps the setpoint of the input voltaage regulation (in case of soalr input)
-the menu answers with ++  Amp=00.650 or +  Amp=00.640 depending if it was a coarse or a fine step.
+# Operation over serial, buttons and rotary encoder
 
+## Set points or modes of operation
+A long press >5 seconds on either button up, down, or rotary button enters the set point mode.
 
-The commands can be stacked: you may type ++++++++++++, ------, >>>>>, <<<<<<<<<<< then enter and it will increasedecrease the corresponding number of steps.
-
-## Modes of Operation:
-
-These commands control different operation modes:  (every time the letter is entered, the next mode will be activated)  
-
-- 'A' controls the Ah integration:  
-    "STOP" stops and resets the Ah integration  
-    "RUN" lets  the Ah integratio until stooped  
-    "DAILY"  lest the Ah integration, which is daily reset at 00:00  
-
-- 'O' controls the solar operation modes:  
-   "MANU" the DC/DC controller runs according to output Voltage/Current setpoints.  
-   "PVFX" like above + the output Current setpoint will be limited to control the input voltage to a fixed set point  
-   "MPTT" like above + the panel voltage set point track the maximum power point.  
-
-- "C" Controls the charger mode of operation  (Work in progress)  
+Which value is changed is ruled by the current screen:
+- on screen 1 value changes the Ah integration mode between Stop, Run and Daily,
+- on screen 2 value changes the solar opreation mode between Manu, PvFx,MPPT
+- on screen 3 Value change the Vo setpoint
+- on screen 4 Value change the Io setpoint
+- on screen 5 Value change the Vi setpoint.
+- on screen 6 Value will change the charger mode of operation  (planned)  
    "NIGH", Night mode, no charge  
    "RECO", Recover from discharged battery  
    "BULK", Bulk charge  
@@ -68,30 +68,61 @@ These commands control different operation modes:  (every time the letter is ent
    "NOBA", No Battery  
    "NOPA", No Panel  
    "EXAM" 
+- on other screens only a message: no set point here! is issued.
+
+You change the value over the rotary encoder, the keys up / down, or 
+over the serial interface with the keys + and -, this presets "value change change". (no need for a long press to change mode over serial.
+
+Serial comments are stackable:  3+++4--1  increases the voltage, diminishes the current and returns to screen 1 in "display change" mode.
+
+Value changes are increasing according to a square rule so you can make bigger increments faster e.g: 
++ changes by 0.01, 
+++ changes by changes by 0.04, 
++++ changes by changes by 0.09,
+ ++++ changes by changes by 0.16
+This is also valid for the rotary encoder.
 
 
-## Setting the pace for periodical reports
-The pace for next 2 reports is given with a lower case prefix:  
+The serial commands from previous versions:
+- % (toggle between coarse and fine), 
+- <,> change current
+- {,} change Vin setpoint
+- O Operation
+- A Ah mode change
+have been removed, there is no more need for them any more.
+
+## Reports control over serial
+
+Reports can only be controlled over serial.
+
+### Setting the pace for periodical reports
+The pace for periodical reports is given with a lower case prefix:  
 's', 'm', 'h', 'd' staying for every second, minutely, hourly, daily.  
 Once the pace for periodical reports is given, it stays valid for every report called after, until another pace is choosen or a '!' stop command is entered.  
 
-## Periodical reports
+### Periodical reports
 currently the following periodical reports are available (more to come)
 
-### 'D':  //Debug Report
+#### 'D':  //Debug Report
 Debug Report shows important internal varables to calibrate your system:
 ADC_VinRaw:627 Vin:21.040 ADC_VoutRaw:421 Vout:14.434 ADC_IoutRaw:114 Iout:00.037 PWM_Vset:0262 Vset:14.500 PWM_Cset:0125 Iset:00.650
 
-### 'E':  //Energy Report
+#### 'E':  //Energy Report
 Energy report shows the measurments values.
 Vset:14.500 Vout:14.434 Iset:00.650 Iout:00.045 Wout:+00.566
+
+#### "X":  // EXcel report for calibration
+
+#### "J":   // Job duration report for debugging purposes.
 
 example: If you type "sE" you will get the energy report issued every second, if you type "mE" to get the same report issued every minute.
 
 In that last case the output is best suitable with Arduino's serial plotter to get a plot of all values:
 ![image](https://user-images.githubusercontent.com/14197155/107235100-9ff60700-6a24-11eb-9ed8-552b373d9c1a.png) 
 
-### 'S':  //Summary Report (one shot only)
+### Onte time reports
+
+#### 'S':  //Summary Report (one shot only)
 This command issues a report for the past 24hours:
 ```
 Daily Report for 
@@ -130,24 +161,17 @@ Extra hours 25:H-1, 26:today, 27:D-1, 28:D-2..
 30  | +01.970 | +12.096 | +23.828 |
 ```
 
-### 't': // Print time
+#### 't': // Print time
 Thu Apr 15 15:49:19 2021
 
-### 'T': // Enter time
+#### 'T': // Enter time
 this command is only valued off-line, with an Internet connection the time is given from the NTP server.
 
-## Display control commands
-You will be able to control which information is displayed on the TFT Display:  
-- '0' switch of the display
-- '1' Volt /Ampere  Display (output)
-- '2' Volt /Ampere  Display (intput)
-- '3' Output Voltage display (with set point control)
-- '3' Output Current display (with set point control)
-- '4' Input Voltage display  (with set point control)
-- '5' Power Supply Display
-- '6' Battery Display
-- '7' Statistics display
+## System commands
 
-- '9' Cycling throughh the displays
+### 'Z' System reset
+### 'z' reset integration values
+### "W' write parameters to EEPROM (if no thinger)
+
 
  
