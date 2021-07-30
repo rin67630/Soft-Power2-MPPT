@@ -1,8 +1,10 @@
-#V3.1
+# V3.1
+
 The hardware/serial interface has been completely redesigned and the software streamlined.
 
 Now the changes over the rotary encoder, the buttons up down and the serial interface are working the same way:
-Which value to change depends on the screen, ther is one screen for every value.
+Which value to change depends on the screen, there is one screen for every value.
+The values are always changed with + or -.
 
 Long press on either button (up, down, rotary) > 5 seconds toggles between "display change" and "value change".
 
@@ -32,7 +34,7 @@ The serial commands % (toggle between coarse and fine), <,> change current have 
 
 # V3.0
 
-this major version supports beside the TTGO development board ( which remains the reference ) also Wemos ESP32 borads with an OLED 128*64 BW display and the Heltec LoRa Board,  
+This major version supports beside the TTGO development board ( which remains the reference ) also Wemos ESP32 borads with an OLED 128*64 BW display and the Heltec LoRa Board,  
 that is planned to deliver long-range radio transmission.
 
 The different hardware specific files are provided in a folder "SoftPower_HAL_Files" that should be moved underneath the library folder, to be discovered upon compiling.
