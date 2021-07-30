@@ -1,8 +1,10 @@
 void setup()
 {
+
 #ifdef CONTR_IS_HELTEC
-  auto &display = *(Heltec.display);
-  Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
+  //  Heltec.begin(false /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
+  display.init();
+  display.setContrast(160);
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -11,15 +13,14 @@ void setup()
   uint64_t chipId = ESP.getEfuseMac(); //The chip ID is essentially its MAC address(length: 6 bytes).
   Serial.printf("ESP32ChipID=%04X ", (uint16_t)(chipId >> 32)); //print High 2 bytes
   Serial.printf("%08X\n", (uint32_t)chipId); //print Low 4b
+#endif
   delay(5000);
-
-#else
   // Serial initialisation
   Serial.begin (SERIAL_SPEED); // On USB port
   // Serial.setDebugOutput(true);
-#endif
 
-  Wire.begin(I2C_SDA, I2C_SCL);
+
+  // Wire.begin(I2C_SDA, I2C_SCL);
   Console4.printf("\n\n\n\n\nDevice %s resetted!\n", DEVICE_NAME);
   Console4.printf("ESP-Karajan framew. ready: Serial @ %u Baud\n", SERIAL_SPEED);
 
@@ -62,9 +63,11 @@ void setup()
 #ifdef ROTARY
   Console4.printf("Initializing ROT \n");
   rotaryEncoder.begin();
-  rotaryEncoder.setup(
+  rotaryEncoder.setup
+  (
     [] { rotaryEncoder.readEncoder_ISR(); },
-    [] { rotary_onButtonClick(); });
+    [] { rotary_onButtonClick(); }
+  );
 
   //set boundaries and if values should circle or not
   //in this example we will set possible values between 0 and 1000;
@@ -97,7 +100,6 @@ void setup()
 #define GFX_HEIGHT 135
   tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
-  //tft.setRotation(1);
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE);
   tft.setCursor(0, 0);
@@ -117,7 +119,7 @@ void setup()
   display.init();
   delay(1000);
   display.setColor(WHITE);
-  //display.setBrightness(100);
+  display.setBrightness(BRIGHTNESS / 21);
 #ifdef DISPLAY_REVERSED
   display.flipScreenVertically();
 #endif

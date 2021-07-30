@@ -1,4 +1,4 @@
-// *** libraries***
+// *** libraries*** (including with <> takes by priority global files, including with "" takes local files). 
 //#define _DISABLE_TLS_      (Workaround to circumvent a bug in TLS handling for Thinger.io versions >2.15, better use 2.14)
 #include <ArduinoOTA.h>    // from Library
 #include <WiFi.h>          // built-in
@@ -7,11 +7,25 @@
 #include <FS.h>            // built-in
 #include <ThingerESP32.h>  // from Library (Thinger)
 #include <EEPROM.h>        // to be replaced by preferences
+#include <Wire.h>          // from Library (I2C)
+#include <MoToButtons.h>   // from Library (MoBaTools).
+
 
 // *** Optional libraries ***
- 
-#ifndef CONTR_IS_HELTEC
-#include <Wire.h>          // from Library (I2C)
+#ifdef CONTR_IS_HELTEC
+#include <heltec.h>
+#include "Heltec_LoRa.h"  // from libraries/SoftPower_HAL_Files
+#endif
+
+#ifdef CONTR_IS_TTGO
+#include <TFT_eSPI.h> 
+#include "TTGO_LCD.h"  // from libraries/SoftPower_HAL_Files
+#include <SPI.h>
+#endif
+
+#ifdef CONTR_IS_WEMOS 
+#include <SSD1306Wire.h>  // from https://github.com/ThingPulse/esp8266-oled-ssd1306/
+#include "Wemos32_OLED.h"  // from libraries/SoftPower_HAL_Files
 #endif
 
 #ifdef ROTARY
@@ -37,22 +51,6 @@
 #include <INA.h>    
 #endif
 
-#ifdef CONTR_IS_HELTEC
-#include <heltec.h>
-#include <Heltec_LoRa.h>
-#endif
-
-#ifdef CONTR_IS_TTGO
-#include <TFT_eSPI.h> 
-#include "TTGO_LCD.h"
-#include <SPI.h>
-#endif
-
-#ifdef CONTR_IS_WEMOS 
-#include <SSD1306Wire.h>  // from https://github.com/ThingPulse/esp8266-oled-ssd1306/
-#include "Wemos32_OLED.h"
-#endif
-
 #ifdef DISPLAY_IS_OLED
 #define OLED_W 128
 #define OLED_H 64
@@ -67,7 +65,10 @@
 #define MANU         0  // fix voltage 
 #define PVFX         1  // fix panel voltage
 #define MPPT         2  // maximum power point tracking
-#define AUTO         3  // automatic
+
+#define STOP       0  //Ah mode reset
+#define RUN        1  //Ah mode reset
+#define DAILY      2  //Ah mode reset
 
 #define UDP_TX_PACKET_MAX_SIZE 128 //increase UDP size
 #define DST_MN        60
@@ -119,10 +120,15 @@ boolean serialEvent;
 boolean triglEvent;
 boolean cycleDisplay = false;
 boolean coarse = true;
-long    nothingPressed;
+unsigned long lastTimePressed[3];
 unsigned int rotaryEncoderValue;
-long    encoderChanged;
-boolean buttonPressed;
+long    action;
+boolean setpointMode;
+// Parameters for MoToButtons
+#define MAX8BUTTONS     // This saves ressources if you don't need more than 8 buttons
+const byte buttonPins [] = { BUTTON_UP, BUTTON_DOWN, ROTARY_ENCODER_BUTTON_PIN };
+enum : byte { UP, DOWN, ROT };
+const byte buttonCount = sizeof(buttonPins);
 
 static IPAddress ip;
 byte wifiConnectCounter;
@@ -171,9 +177,9 @@ float Ahout;           //Ah of the current hour
 float Vavgout;          //Avg voltage in hour
 
 // Dashboard
-String CtrlMode_description[] = {"Manu", "PVFx", "MPPT"}; // for dashboard.CtrlMode
+String CtrlMode_description[] = {"Manu ", "PVFx ", "MPPT "}; // for dashboard.CtrlMode
 String ChrgPhase_description[] = {"NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"}; // for dashboard.ChrgPhase
-String AhCycle_description[] = {"Stop", "Run", "Daily"}; // for dashboard.CtrlMode
+String AhCycle_description[] = {" Stop ", "  Run ", "Daily "}; // for dashboard.CtrlMode
 
 struct dashboard {
   // Measures

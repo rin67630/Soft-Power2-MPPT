@@ -3,18 +3,23 @@
                          (uint16_t)((uint16_t)millis() - _lasttime) >= (t);\
                          _lasttime += (t))
 
-//****** Instanciations ******
+//****** Instantiations ******
 WiFiUDP UDP; // Creation of wifi Udp instance
 
 #ifdef THINGER
 ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS);
 #endif
 
+MoToButtons Buttons( buttonPins, buttonCount, 130, 5000 ); //  130ms debounce. 5 s to distinguish short/long
+
+
 #ifdef CONTR_IS_WEMOS
 SSD1306Wire display(0x3c, I2C_SCL, I2C_SDA);                  //OLED 128*64 soldered
 #endif
-
-#ifdef DISPLAY_IS_LCD
+#ifdef CONTR_IS_HELTEC
+SSD1306Wire display(0x3c, SDA_OLED, SCL_OLED, RST_OLED, GEOMETRY_128_64);
+#endif
+#ifdef CONTR_IS_TTGO
 TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 #define TFT_GREY     0x5AEB // better Grey
 #define TFT_VERMILON 0xFA60 // better Orange
@@ -40,32 +45,10 @@ BluetoothSerial SerialBT;
 #endif
 
 // ***** Functions ******
+
 void rotary_onButtonClick()
 {
-  static unsigned long lastTimePressed = 0;
-  //ignore multiple press in that time milliseconds
-  if (millis() - lastTimePressed < 500)
-  {
-    buttonPressed = not buttonPressed;
-    Console4.print("buttonPressed is ");
-    Console4.println(buttonPressed);
-  }
-  //  Serial.print("button pressed for ");
-  //  Serial.println(millis() - lastTimePressed);
-  lastTimePressed = millis();
 }
-
-#ifdef ROTARY
-void rotary_loop()
-{
-  //dont print anything unless value changed
-  encoderChanged = rotaryEncoder.encoderChanged();
-  if (! encoderChanged)
-  {
-    return;
-  }
-}
-#endif
 
 // ************WiFi Managemement****************
 void getWiFi()
@@ -185,6 +168,7 @@ void setBrightness( int brightness)  // Display brightness 0..2047
 {
   ledcWrite(14, brightness);
 }
+
 
 // Other Math / conversions
 bool inRange(int x, int low, int high) // checks if a value is in boundaries

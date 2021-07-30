@@ -126,7 +126,7 @@ if (WiFi.status() != WL_CONNECTED)
     if (I_value == 0)    // control parameters unitialized, set default values)
     {
     P_value = 2;
-    thing_property["_P_value"];
+    thing_property["_P_value"]= 2;
     I_value = 2;
     thing_property["_I_value"] = 2;
     fractionVoc = 0.8;
