@@ -1,3 +1,35 @@
+#V3.1
+The hardware/serial interface has been completely redesigned and the software streamlined.
+
+Now the changes over the rotary encoder, the buttons up down and the serial interface are working the same way:
+Which value to change depends on the screen, ther is one screen for every value.
+
+Long press on either button (up, down, rotary) > 5 seconds toggles between "display change" and "value change".
+
+Over the serial interface you can enter directly the screen number 1-8, 
+screen number 0 is black screen (power save), 
+screen number 9 is cycling every five seconds between 1-8, this presets "display change".
+
+Value change is possible in the screens 3,4,5 (Vo, Io, Vi setpoints), 
+on screen 1, value changes the Ah integration mode between Stop, Run and Daily,
+on screen 2 value changes the solar opreation mode between Manu, PvFx,MPPT
+else an information is issued" no value change here".
+
++ and - over the serial interface, changes the value  and presets the "value change" mode, so you just can use the  rotary encoder as well.
+
+Serial comments are stackable:  3+++4--1  increases the voltage, diminishes the current and returns to screen 1 in "display change" mode.
+
+Once in a "value change" mode, you just enter +++ or --.
+
+Value changes are increasing according to a square rule so you can make bigger increments faster e.g: 
++ changes by 0.01, 
+++ changes by changes by 0.04, 
++++ changes by changes by 0.09,
+ ++++ changes by changes by 0.16
+This is also valid for the rotary encoder.
+
+The serial commands % (toggle between coarse and fine), <,> change current have been removed, there is no more need for them.
+
 # V3.0
 
 this major version supports beside the TTGO development board ( which remains the reference ) also Wemos ESP32 borads with an OLED 128*64 BW display and the Heltec LoRa Board,  
