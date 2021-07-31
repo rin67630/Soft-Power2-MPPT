@@ -165,13 +165,15 @@ Extra hours 25:H-1, 26:today, 27:D-1, 28:D-2..
 Thu Apr 15 15:49:19 2021
 
 #### 'T': // Enter time
-this command is only valued off-line, with an Internet connection the time is given from the NTP server.
+this command is only useful off-line, with an Internet connection the time is given from the NTP server.
 
 ## System commands
 
 ### 'Z' System reset
 ### 'z' reset integration values
-### "W' write parameters to EEPROM (if no thinger)
+### 'W' write parameters to EEPROM (if no thinger)
+This command writes the persistaence parameters to EEPROM, so that a subsequent reset will restore the Ah and Wh integration values to continue seamlessly.
+If thinger.io is active, persistance will be automatically taken over by this server, so resets will mainly preserve data, without need to call 'W'
 
 
  
