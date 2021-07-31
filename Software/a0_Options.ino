@@ -1,14 +1,14 @@
 // *** Component selection ***
 // Select Converter type, Controller type, Display type, ADC type
 
-#define CONTR_IS_HELTEC     //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                      Choice of ESP controller boards
+#define CONTR_IS_TTGO     //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                      Choice of ESP controller boards
 // N.B. Compile sketch with following board settings: 
 //- for option Wemos:          Wemos Lolin32
 //- for option TTGO:           TTGO T1 
 //- for option Heltec LoRa:    Heltec WiFi Lora32  (Not V2 !) 
-#define DISPLAY_IS_OLED      //_IS_OLED, _IS_LCD, _IS_NONE                         Choice of display
-#define ADC_IS_SIMULATED     //_IS_INA226, _IS_ADS1115, _IS_ESP, _IS_SIMULATED          Choice of ADC used
-#define CONV_IS_SIMULATED    //_IS_D6008, _IS_D6012,_IS_J3603, IS_J3806, _IS_SIMULATED  Choice of converter motherboards
+#define DISPLAY_IS_LCD      //_IS_OLED, _IS_LCD, _IS_NONE                         Choice of display
+#define ADC_IS_ADS1115     //_IS_INA226, _IS_ADS1115, _IS_ESP, _IS_SIMULATED          Choice of ADC used
+#define CONV_IS_D6012    //_IS_D6008, _IS_D6012,_IS_J3603, IS_J3806, _IS_SIMULATED  Choice of converter motherboards
 
 
 // *** List of available battery header files ***, uncomment accordingly
@@ -27,7 +27,6 @@
 #define ROTARY              // Uncomment if rotary encode is not present
 //#define FET_EXTENSION     // Extension board with 4 FET and ADC 1115
 #define PANEL_MPP 30
-
 
 //  ***Communication options*** (For geeks only, else leave as it is)
 #define THINGER           // Comment out if no Thinger is to be used

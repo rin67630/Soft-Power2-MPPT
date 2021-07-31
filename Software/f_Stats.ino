@@ -21,7 +21,7 @@ void statsRun()
     Ahout   = persistence.HourISum / persistence.HourSamples;
     Whout   = persistence.HourWSum / persistence.HourSamples;
     
-    if ( persistence.AhMode == 0)
+    if ( persistence.AhMode == STOP)
     {
       dashboard.VoutAvg = Vavgout;
       dashboard.Ahout   = Ahout;        // Ah is from the current Hour
@@ -82,5 +82,5 @@ void statsRun()
     persistence.voltageAt0H  = dashboard.Vout;  // taking the voltage at 23:55 to evaluate if the battery gained/lost during the previous day
   }
 // Restting the cycle at the beginning of the new day.
-  if (NewDay && persistence.AhMode == 2)  Ahout = Whout = persistence.CycleVSum = persistence.CycleISum = persistence.CycleWSum = persistence.CycleSamples = 0;
+  if (NewDay && persistence.AhMode == DAILY)  Ahout = Whout = persistence.CycleVSum = persistence.CycleISum = persistence.CycleWSum = persistence.CycleSamples = 0;
 }

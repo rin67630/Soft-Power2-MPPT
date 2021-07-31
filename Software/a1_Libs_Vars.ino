@@ -1,4 +1,5 @@
 // *** libraries*** (including with <> takes by priority global files, including with "" takes local files). 
+
 //#define _DISABLE_TLS_      (Workaround to circumvent a bug in TLS handling for Thinger.io versions >2.15, better use 2.14)
 #include <ArduinoOTA.h>    // from Library
 #include <WiFi.h>          // built-in
@@ -9,7 +10,6 @@
 #include <EEPROM.h>        // to be replaced by preferences
 #include <Wire.h>          // from Library (I2C)
 #include <MoToButtons.h>   // from Library (MoBaTools).
-
 
 // *** Optional libraries ***
 #ifdef CONTR_IS_HELTEC
@@ -28,6 +28,14 @@
 #include "Wemos32_OLED.h"  // from libraries/SoftPower_HAL_Files
 #endif
 
+#ifdef ADC_IS_ADS1115
+#include <ADS1115_WE.h>    // from Library (Wollewald)
+#endif
+
+#ifdef ADC_IS_INA226
+#include <INA.h>    
+#endif
+
 #ifdef ROTARY
 #include "AiEsp32RotaryEncoder.h"
 #endif
@@ -38,44 +46,35 @@
 
 #ifdef BLUETOOTH
 #include "BluetoothSerial.h"
-#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-#endif
 #endif
 
-#ifdef ADC_IS_ADS1115
-#include <ADS1115_WE.h>    // from Library (Wollewald)
-#endif
-
-#ifdef ADC_IS_INA226
-#include <INA.h>    
-#endif
-
-#ifdef DISPLAY_IS_OLED
-#define OLED_W 128
-#define OLED_H 64
-#endif
-
-#ifdef DISPLAY_IS_LCD
-#define TFT_W 160
-#define TFT_H 128
-#endif
+//****************************************************************************
+//***Definitions***
 
 // Solar charger CtrlMode  modes
-#define MANU         0  // fix voltage 
-#define PVFX         1  // fix panel voltage
-#define MPPT         2  // maximum power point tracking
+#define MANU       0  // fix voltage 
+#define PVFX       1  // fix panel voltage
+#define MPPT       2  // maximum power point tracking
 
 #define STOP       0  //Ah mode reset
 #define RUN        1  //Ah mode reset
 #define DAILY      2  //Ah mode reset
+
+#define OLED_W 128
+#define OLED_H 64
+
+#define TFT_W 160
+#define TFT_H 128
 
 #define UDP_TX_PACKET_MAX_SIZE 128 //increase UDP size
 #define DST_MN        60
 #define GMT_OFFSET_SEC 3600 * TZ
 #define DAYLIGHT_OFFSET_SEC 60 * DST_MN
 
-//***Variables for Time***
+//*****************************************************************************
+// ***Variables***
+
+// ***Time***
 tm*        timeinfo;                 //localtime returns a pointer to a tm struct static int Second;
 time_t     Epoch;
 time_t     now;
@@ -110,7 +109,7 @@ boolean NewDay;
 boolean DayExpiring;
 
 
-// ***Variables for Menu***
+// ***Menu***
 byte    inbyte;
 byte    displayPage;
 byte    displaySubPage;
@@ -133,7 +132,7 @@ const byte buttonCount = sizeof(buttonPins);
 static IPAddress ip;
 byte wifiConnectCounter;
 
-//ADC / PWM measurement and conversions
+// ***ADC / PWM measurement and conversions***
 int ADC_VoutRaw;
 int ADC_IoutRaw;
 int ADC_VinRaw;
@@ -150,12 +149,12 @@ int PWM_SetVout;   // CV Setpoint PWM
 int PWM_SetIout;   // CC Setpoint PWM
 int PWM_Fan;       // Fan control PWM
 
-// Controller Settings
+// ***Controller Settings***
 float P_value = 1;     //Proportional Gain
 float I_value = 3;     //Integrative Gain
 float D_value = 1;     //Derivative Gain
 
-// MPPT
+// ***MPPT***
 unsigned int collapseTimer;
 float MPPT_last_power;
 float MPPT_last_voltage;
@@ -168,7 +167,7 @@ float IoutSlow;
 float collapseTreshold = 5;
 float MPPT_perturbe = 0.025;
 
-// Power Integrations and mean values
+// ***Power Integrations and mean values***
 float delta_current = 1;
 float delta_voltage = 1;
 float raw_internal_resistance;
@@ -176,10 +175,10 @@ float Whout;           //Wh of the current hour
 float Ahout;           //Ah of the current hour
 float Vavgout;          //Avg voltage in hour
 
-// Dashboard
+// ***Thinger.io Dashboard***
 String CtrlMode_description[] = {"Manu ", "PVFx ", "MPPT "}; // for dashboard.CtrlMode
 String ChrgPhase_description[] = {"NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"}; // for dashboard.ChrgPhase
-String AhCycle_description[] = {" Stop ", "  Run ", "Daily "}; // for dashboard.CtrlMode
+String AhCycle_description[] = {" Stop ", "  Run ", "Daily "}; // for persistance.AhMode
 
 struct dashboard {
   // Measures
@@ -205,7 +204,7 @@ struct dashboard {
 } dashboard;
 unsigned char dashboard_punning[sizeof(dashboard)];  //  Array of characters as image of the structure for udp xmit/rcv
 
-// Reset safe initialisation
+// ***Reset safe initialisation***
 struct persistence {
   float initial_voltage;
   float voltageAt0H ;
@@ -222,7 +221,7 @@ struct persistence {
 } persistence;
 unsigned char persistence_punning[sizeof(persistence)];  //  Array of characters as image of the structure for udp xmit/rcv
 
-// Power Statistics Arrays
+// ***Power Statistics Arrays***
 float VoutAvg[32];
 float Ah[32];
 float Wh[32];
@@ -240,10 +239,9 @@ boolean Out_IExt0;
 boolean Out_IExt1;
 boolean Out_IExt2;
 boolean Out_IExt3;
-
-
 #endif
 
+// ***Serial Output Definitions***
 #ifdef BLUETOOTH
 //*** Aliases for serial communication***
 #define Console0 SerialBT  // Reports 1

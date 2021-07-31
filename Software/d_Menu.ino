@@ -109,9 +109,9 @@ void menuRun()
       if (dashboard.ChrgPhase >= 13) dashboard.ChrgPhase  = 0;
       Console1.print ("Char.Mode changed to " + ChrgPhase_description[dashboard.ChrgPhase] + "\n" );
       break;
-    case 'A': //Ah Cycles "STOP", "RUN", "DAILY
+    case 'A': //Ah Cycles "STOP", "RUN", "DAILY"
       persistence.AhMode  ++;
-      if (persistence.AhMode  >= 3) persistence.AhMode  = 0;
+      if (persistence.AhMode  > DAILY) persistence.AhMode  = STOP;
       Runtime = AhCycle_description[persistence.AhMode];
       Console1.print ("Ah.Mode changed to " + AhCycle_description[persistence.AhMode] + "\n" );
       break;

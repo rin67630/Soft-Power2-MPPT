@@ -16,9 +16,11 @@ MoToButtons Buttons( buttonPins, buttonCount, 130, 5000 ); //  130ms debounce. 5
 #ifdef CONTR_IS_WEMOS
 SSD1306Wire display(0x3c, I2C_SCL, I2C_SDA);                  //OLED 128*64 soldered
 #endif
+
 #ifdef CONTR_IS_HELTEC
 SSD1306Wire display(0x3c, SDA_OLED, SCL_OLED, RST_OLED, GEOMETRY_128_64);
 #endif
+
 #ifdef CONTR_IS_TTGO
 TFT_eSPI tft = TFT_eSPI();       // Invoke custom library
 #define TFT_GREY     0x5AEB // better Grey
@@ -155,7 +157,7 @@ void setTimefromSerial()           // Enter time over serial
   }
 }
 
-//**********Power saving delays****************
+//*** Power saving delays ***
 void espDelay(int ms)
 {
   esp_sleep_enable_timer_wakeup(ms * 1000);
@@ -163,14 +165,15 @@ void espDelay(int ms)
   esp_light_sleep_start();
 }
 
-//*********Display*****************
+//****Display***
+
 void setBrightness( int brightness)  // Display brightness 0..2047
 {
   ledcWrite(14, brightness);
 }
 
 
-// Other Math / conversions
+//*** Other Math / conversions ***
 bool inRange(int x, int low, int high) // checks if a value is in boundaries
 {
   if (x >= low && x <= high)

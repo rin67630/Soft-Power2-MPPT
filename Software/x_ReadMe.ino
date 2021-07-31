@@ -5,7 +5,7 @@
 
 rotaryEncoder.setEncoderValue(1);
 rotary_onButtonClick();
-if (rotaryEncoder.encoderChanged())
+if (rotaryEncoder.action())
 rotaryEncoder.setBoundaries(1, 10, false);
 rotaryEncoder.readEncoder()
 rotaryEncoder.setAcceleration(0);  //or set the value 0...255 - larger number = more accelearation; 0 or 1 means disabled acceleratio
@@ -23,6 +23,7 @@ OLED Display Instructions
     // Drawing functions 
     // Sets the color of all pixel CtrlMode s
     display.setColor(OLEDDISPLAY_COLOR color);
+    display.setTextColor(BLACK, WHITE); // 'inverted' text
     // Returns the current color.
     OLEDDISPLAY_COLOR getColor();
 // Display functions

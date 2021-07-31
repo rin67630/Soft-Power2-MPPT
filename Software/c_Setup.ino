@@ -1,7 +1,21 @@
 void setup()
 {
 
+  delay(5000);
+  // Serial initialisation
+  Serial.begin (SERIAL_SPEED); // On USB port
+  // Serial.setDebugOutput(true);
+
+#ifdef CONTR_IS_TTGO
+  Wire.begin(I2C_SDA, I2C_SCL);
+#endif
+
+#ifdef CONTR_IS_WEMOS
+  Wire.begin(I2C_SDA, I2C_SCL);
+#endif
+
 #ifdef CONTR_IS_HELTEC
+  Wire.begin(SDA_OLED, SCL_OLED);
   //  Heltec.begin(false /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
   display.init();
   display.setContrast(160);
@@ -14,13 +28,7 @@ void setup()
   Serial.printf("ESP32ChipID=%04X ", (uint16_t)(chipId >> 32)); //print High 2 bytes
   Serial.printf("%08X\n", (uint32_t)chipId); //print Low 4b
 #endif
-  delay(5000);
-  // Serial initialisation
-  Serial.begin (SERIAL_SPEED); // On USB port
-  // Serial.setDebugOutput(true);
 
-
-  // Wire.begin(I2C_SDA, I2C_SCL);
   Console4.printf("\n\n\n\n\nDevice %s resetted!\n", DEVICE_NAME);
   Console4.printf("ESP-Karajan framew. ready: Serial @ %u Baud\n", SERIAL_SPEED);
 
@@ -34,8 +42,8 @@ void setup()
   pinMode(ENA_PIN, OUTPUT);
   digitalWrite(ENA_PIN, LOW); // enable DC/DC converter
 
-  Console4.printf("Initializing PWM \n");
   // Settings for PWM  (Usage: ledcWrite(channel, dutycycle);
+  Console4.printf("Initializing PWM \n");
   ledcSetup(0, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Voltage
   ledcSetup(3, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Current
   ledcSetup(4, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Fan
