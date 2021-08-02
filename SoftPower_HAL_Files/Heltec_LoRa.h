@@ -20,9 +20,9 @@
 #define ADC_IOUT    37    // not used with external ADC
 #define ADC_VIN     38    // not used with external ADC
 #define ADC_IIN     39    // not used with external ADC
-#define PWM_V       12    //(Vpwm)
-#define PWM_I       13    //(Ipwm) 
-#define ENA_PIN     12    // Enable pin
+#define PWM_V       13    //(Vpwm)
+#define PWM_I       12    //(Ipwm) 
+#define ENA_PIN     21    // Enable pin
 #define FAN_PIN     25    // Is also LED
 #define CC_CV_PIN   n/a
 #define EXT_out     21    // Control the external power out
