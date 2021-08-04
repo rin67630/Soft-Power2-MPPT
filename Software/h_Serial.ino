@@ -17,7 +17,7 @@ void serialRun()
         if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
         break;
       case 'X':   // eXcel Calibration report
-        Console1.printf("ADC_VinRaw:%i Vin:%06.3f ADC_IinRaw:%i Iin:%06.3f ADC_VoutRaw:%i Vout:%06.3f ADC_IoutRaw:%i Iout:%06.3f PWM_SetVout:%04i SetVout:%06.3f PWM_SetIout:%04i SetIout:%06.3f PWM_Fan:%04i \n" , ADC_VinRaw, dashboard.Vin, ADC_IinRaw, dashboard.Iin, ADC_VoutRaw, dashboard.Vout, ADC_IoutRaw, dashboard.Iout, PWM_SetVout, dashboard.SetVout, PWM_SetIout, dashboard.SetIout, PWM_Fan);
+        Console1.printf("ADC_VinRaw:\t%i\tVin:\t%06.3f\tADCinRaw:\t%i\tIin:\t%06.3f\tADC_VoutRaw:\t%i\tVout:\t%06.3f\tADC_IoutRaw:\t%i\tIout:\t%06.3f\tPWM_SetVout:\t%04i\tSetVout:\t%06.3f\tPWM_SetIout:\t%04i\tSetIout:\t%06.3f\tPWM_Fan:\t%04i\n" , ADC_VinRaw, dashboard.Vin, ADC_IinRaw, dashboard.Iin, ADC_VoutRaw, dashboard.Vout, ADC_IoutRaw, dashboard.Iout, PWM_SetVout, dashboard.SetVout, PWM_SetIout, dashboard.SetIout, PWM_Fan);
         if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
         break;
       case 'J':   // Job Duration

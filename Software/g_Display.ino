@@ -28,12 +28,15 @@ void displayRun()
           break;
         case 3:
           dashboard.SetVout += float(action * abs(action)) / 100;
+  
           break;
         case 4:
           dashboard.SetIout += float(action * abs(action)) / 100;
+          
           break;
         case 5:
           dashboard.SetVin += float(action * abs(action)) / 100;
+          
           break;
         default:
           Console4.println ("no set point here!");

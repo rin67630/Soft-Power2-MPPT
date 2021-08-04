@@ -30,7 +30,7 @@ void data125mSRun()
 #endif
 
 #ifdef ADC_IS_ADS1115             //Sensing with much better dedicated ADC (highly recommended)
-  adc.setVoltageRange_mV(ADS1115_RANGE_2048);
+  adc.setVoltageRange_mV(ADS_Ch3_Range);
   adc.setCompareChannels(FB_Vout_PIN);
   adc.startSingleMeasurement();
   while (adc.isBusy()) {
@@ -38,7 +38,7 @@ void data125mSRun()
   }
   ADC_VoutRaw = adc.getResult_mV();
 
-  adc.setVoltageRange_mV(ADS1115_RANGE_4096);
+  adc.setVoltageRange_mV(ADS_Ch2_Range);
   adc.setCompareChannels(FB_Iout_PIN);
   adc.startSingleMeasurement();
   while (adc.isBusy()) {
@@ -46,7 +46,7 @@ void data125mSRun()
   }
   ADC_IoutRaw = adc.getResult_mV();
 
-  adc.setVoltageRange_mV(ADS1115_RANGE_2048);
+  adc.setVoltageRange_mV(ADS_Ch1_Range);
   adc.setCompareChannels(FB_Vin_PIN);
   adc.startSingleMeasurement();
   while (adc.isBusy()) {
@@ -54,7 +54,7 @@ void data125mSRun()
   }
   ADC_VinRaw = adc.getResult_mV();
 
-  adc.setVoltageRange_mV(ADS1115_RANGE_0256);
+  adc.setVoltageRange_mV(ADS_Ch0_Range);
   adc.setCompareChannels(FB_Iin_PIN);
   adc.startSingleMeasurement();
   while (adc.isBusy()) {
@@ -90,7 +90,9 @@ void data125mSRun()
   converted_IinRaw = (float(ADC_IinRaw) - FB_Iin_BIAS) * FB_Iin_RES  ;
   dashboard.Iin +=  (converted_IinRaw  / 1000 - dashboard.Iin) / 8 ;      // 1rst order low pass filter
 #endif
-
+  dashboard.SetVout = constrain(dashboard.SetVout, 0, VOUT_MAX);
+  dashboard.SetIout = constrain(dashboard.SetIout, 0, IOUT_MAX);
+  dashboard.SetVin  = constrain(dashboard.SetVin, 0,  VIN_MAX);
   dashboard.ConVout = dashboard.SetVout;
   switch (dashboard.CtrlMode)
   {
