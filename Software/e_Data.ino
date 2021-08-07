@@ -54,14 +54,18 @@ void data125mSRun()
   }
   ADC_VinRaw = adc.getResult_mV();
 
-  adc.setVoltageRange_mV(ADS_Ch0_Range);
-  adc.setCompareChannels(FB_Iin_PIN);
-  adc.startSingleMeasurement();
-  while (adc.isBusy()) {
-    yield();
+  if (FB_Iin_PIN == FB_Iout_PIN)
+  {
+    ADC_IinRaw = ADC_IoutRaw * ADC_VoutRaw/ADC_VinRaw * 1.1;  // Input current is simulated with 90% efficiency
+  } else {                                                    // Input current is measured along a shunt
+    adc.setVoltageRange_mV(ADS_Ch0_Range);
+    adc.setCompareChannels(FB_Iin_PIN);
+    adc.startSingleMeasurement();
+    while (adc.isBusy()) {
+      yield();
+    }
+    ADC_IinRaw =  adc.getResult_mV() * -10;
   }
-  ADC_IinRaw =  adc.getResult_mV() * -10;
-
 #endif
 
 
