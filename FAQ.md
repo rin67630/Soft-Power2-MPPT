@@ -27,3 +27,12 @@ This line must be commented out, if you use a second device on the same account.
 Only one device can write in buckets.
 
 If you have commented out that line for the main device also, you get no trend.
+
+## I am operating my SCC without input current probe
+
+On the corresponding HAL file assign the ADC for Input to the same value than the ADC for Output, e.g.
+
+#define FB_Iin_PIN     ADS1115_COMP_3_GND  
+
+That will prevent weird values in the calibration file.
+When ADC for Input to the same value than the ADC for Output, the software will be emulating the input current, assuming 90% converter efficiency, providing an estimation of the input current (+-20%).
