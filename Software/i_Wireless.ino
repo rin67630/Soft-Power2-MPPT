@@ -94,22 +94,16 @@ void wirelessRun()
     }
     UDP.endPacket();
   }
-  if ((DayExpiring && (serialPeriodicity == 'd'))    ||
-      (HourExpiring && (serialPeriodicity == 'h'))   ||
-      (MinuteExpiring && (serialPeriodicity == 'm')) ||
-      (serialPeriodicity == 's') || (serialPeriodicity == '!'))
+#endif
+#if defined (PUBLISH_MINUTE_LOG)             // Read with NetCat Bash command nc -u -l [UDP_PORT +1]  
+  if (MinuteExpiring )
   {
-    switch (serialPage)
-    {
-      case 'E':   // Energy plot
-        UDP.beginPacket(REPORT_TARGET, UDP_PORT + 1);
-        strftime(charbuff, sizeof(charbuff), "%d%b\t%R\t", timeinfo);
-        UDP.print(charbuff);
-        UDP.printf("SetVin:\t%06.3f\tVin:\t%06.3f\tSetVout:\t%06.3f\tVout:\t%06.3f\tSetIout:\t%06.3f\tIout\t:%06.3f\tWout:\t%+07.3f\n", dashboard.SetVin, dashboard.Vin, dashboard.SetVout, dashboard.Vout, dashboard.SetIout, dashboard.Iout, dashboard.Wout);
-        if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
-        UDP.endPacket();
-        break;
-    }
+    UDP.beginPacket(REPORT_TARGET, UDP_PORT + 1);
+    if (HourExpiring) UDP.printf("Date\tTime\tSetVin:\tVin:\tSetVout:\tVout:\tSetIout:\tIout\tWout:\n");
+    strftime(charbuff, sizeof(charbuff), "%d%b\t%R\t", timeinfo);
+    UDP.print(charbuff);
+    UDP.printf("%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%+07.3f\n", dashboard.SetVin, dashboard.Vin, dashboard.SetVout, dashboard.Vout, dashboard.SetIout, dashboard.Iout, dashboard.Wout);
+    UDP.endPacket();
   }
 #endif
 

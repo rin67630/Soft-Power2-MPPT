@@ -90,6 +90,11 @@ void menuRun()
       memcpy(persistence_punning, &persistence, sizeof(persistence));
       Console2.printf ("\nResetting in 10s...\n");
       delay(10000);
+#ifdef TELNET
+      TelnetStream.println("bye bye");
+      TelnetStream.flush();
+      TelnetStream.stop();
+#endif
       ESP.restart();
       break;
     case 'z':  //Reset runtime
@@ -183,9 +188,9 @@ void menuRun()
     case 'e': //Toggle Events
       serialEvent = not serialEvent;
       break;
-
     // ***Periodical Reports/Plots**
     case 'E':  //Energy Plot
+      Console2.printf ("\Energy Plot\n");
       serialPage = 'E';
       break;
   } //end switch (inbyte)

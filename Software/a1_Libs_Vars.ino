@@ -122,7 +122,6 @@ byte    serialPeriodicity;
 boolean serialEvent;
 boolean triglEvent;
 boolean cycleDisplay = false;
-boolean coarse = true;
 unsigned long lastTimePressed[3];
 unsigned int rotaryEncoderValue;
 long    action;
@@ -248,15 +247,15 @@ boolean Out_IExt3;
 // ***Serial Output Definitions***
 #ifdef TELNET
 //*** Aliases for serial communication***
-#define Console0 Serial  // Menu in
+#define Console0 Serial        // Menu in
 #define Console1 TelnetStream  // Reports 
 #define Console2 TelnetStream  // Menu out
 #define Console3 TelnetStream  // Errors
-#define Console4 Serial  // Boot messages
+#define Console4 Serial        // Boot messages
 #else
-#define Console0 Serial  // Reports 1
-#define Console1 Serial1  // Reports 2
-#define Console2 Serial  // Menu
+#define Console0 Serial   // Menu in
+#define Console1 Serial1  // Reports 
+#define Console2 Serial   // Menu out
 #define Console3 Serial1  // Errors
-#define Console4 Serial  // Boot messages
+#define Console4 Serial   // Boot messages
 #endif

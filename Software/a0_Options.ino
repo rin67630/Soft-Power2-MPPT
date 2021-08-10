@@ -29,13 +29,15 @@
 //  ***Communication options*** (For geeks only, else leave as it is)
 #define THINGER           // Comment out if no Thinger is to be used
 #define SERIAL_SPEED      115200  //9600  115200 230400
-#define DATA_TARGET     "192.168.188.64"  // IP to forward data to a remote UDP Receiver
+#define DATA_TARGET     "192.168.188.64"  // IP to forward data to a remote UDP slave (another ESP)
+#define UDP_PORT   4212    // Ports to forward/receive data
 //#define UDP_MASTER       // If this is the  master of a slave ESP
 //#define UDP_SLAVE        // If this is the  slave of a master ESP
 #define TELNET
-#define REPORT_TARGET     "192.168.188.64"  // IP to forward reports to a remote UDP Receiver
-#define PUBLISH_REPORT
-#define UDP_PORT   4212    // Ports to forward/receive data
+#define REPORT_TARGET     "192.168.188.64"  // IP to forward reports to a remote UDP Receiver e.g. a Raspberry Pi.
+#define PUBLISH_REPORT       //Midnight report with Ah per hour
+#define PUBLISH_MINUTE_LOG   //Minutely log of valuesand setpoints
+
 //#define _DEBUG_          // debug information over Network and Thinger to serial
 //#define BLUETOOTH        //Serial communication over bluetooth  (Exceeds available memory if not compiled with partition scheme minmal SPIFFS)
 
