@@ -1,7 +1,7 @@
 void loop()
 {
 // run when idle.
-  yield();              //Yield for WiFi
+  yield(); //Yield for WiFi
   runEvery(125)         //125mS cf Every Macro in Functions
   {
     MillisMem = millis();

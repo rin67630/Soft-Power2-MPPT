@@ -3,6 +3,7 @@
 //#define _DISABLE_TLS_      (Workaround to circumvent a bug in TLS handling for Thinger.io versions >2.15, better use 2.14)
 #include <ArduinoOTA.h>    // from Library
 #include <WiFi.h>          // built-in
+//#include <WifiMulti.h>
 #include <WiFiUdp.h>       // built-in
 #include "time.h"          // built-in
 #include <FS.h>            // built-in
@@ -10,6 +11,9 @@
 #include <EEPROM.h>        // to be replaced by preferences
 #include <Wire.h>          // from Library (I2C)
 #include <MoToButtons.h>   // from Library (MoBaTools).
+#ifdef TELNET
+#include <TelnetStream.h>     // freom library (Lennart Hennings).
+#endif
 
 // *** Optional libraries ***
 #ifdef CONTR_IS_HELTEC
@@ -242,17 +246,17 @@ boolean Out_IExt3;
 #endif
 
 // ***Serial Output Definitions***
-#ifdef BLUETOOTH
+#ifdef TELNET
 //*** Aliases for serial communication***
-#define Console0 SerialBT  // Reports 1
-#define Console1 SerialBT  // Reports 2
-#define Console2 SerialBT  // Menu
-#define Console3 Serial // Errors
+#define Console0 Serial  // Menu in
+#define Console1 TelnetStream  // Reports 
+#define Console2 TelnetStream  // Menu out
+#define Console3 TelnetStream  // Errors
 #define Console4 Serial  // Boot messages
 #else
 #define Console0 Serial  // Reports 1
-#define Console1 Serial  // Reports 2
+#define Console1 Serial1  // Reports 2
 #define Console2 Serial  // Menu
-#define Console3 Serial  // Errors
+#define Console3 Serial1  // Errors
 #define Console4 Serial  // Boot messages
 #endif

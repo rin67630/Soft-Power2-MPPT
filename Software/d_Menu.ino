@@ -2,6 +2,9 @@ void menuRun()
 {
   //  if (Year < 2020) setTimefromSerial();
   if (Console0.available())   inbyte = Console0.read(); //Serial input available
+#ifdef TELNET
+  if (TelnetStream.available())   inbyte = TelnetStream.read(); //Serial input available
+#endif
   /*  // Provision for I2C Keyboard
     Wire.requestFrom(0x08, 1)
     while (Wire.available())
@@ -44,7 +47,7 @@ void menuRun()
 #ifdef DISPLAY_IS_OLED
       display.clear();
 #endif
-      Console1.printf ("Off\n");
+      Console2.printf ("Off\n");
       break;
     case '1':
     case '2':
@@ -56,7 +59,7 @@ void menuRun()
     case '8':
       // switch screen pages
       cycleDisplay = false;
-      setpointMode = false;      
+      setpointMode = false;
       displayPage = inbyte - 48;  // Ascii to number
 #ifdef DISPLAY_IS_LCD
       tft.fillScreen(TFT_BLACK);
@@ -64,14 +67,14 @@ void menuRun()
 #ifdef DISPLAY_IS_OLED
       display.setContrast(255);
 #endif
-      Console1.printf ("D= %i \n", inbyte - 48);
+      Console2.printf ("D= %i \n", inbyte - 48);
       break;
     case '9': //Cycle Displays
       cycleDisplay = true;
 #ifdef DISPLAY_IS_LCD
       tft.fillScreen(TFT_BLACK);
 #endif
-      Console1.printf ("Cycling displays\n");
+      Console2.printf ("Cycling displays\n");
       break;
     case '+': //Increase Vout Setpoint
       ++action;
@@ -85,13 +88,13 @@ void menuRun()
       for ( int i = 0; i < sizeof(persistence); ++i ) EEPROM.write ( i + 100,  persistence_punning[i] );
       EEPROM.commit();
       memcpy(persistence_punning, &persistence, sizeof(persistence));
-      Console1.printf ("\nResetting in 10s...\n");
+      Console2.printf ("\nResetting in 10s...\n");
       delay(10000);
       ESP.restart();
       break;
     case 'z':  //Reset runtime
-      Console1.printf ("\nRt:%06ui m, Ah:%06.3f Wh:%06.3f \n", persistence.CycleSamples, Ahout, Whout);
-      Console1.printf ("\nResetting \n");
+      Console2.printf ("\nRt:%06ui m, Ah:%06.3f Wh:%06.3f \n", persistence.CycleSamples, Ahout, Whout);
+      Console2.printf ("\nResetting \n");
       persistence.HourSamples = 0;
       Ahout = Whout = 0;
       persistence.CycleVSum = persistence.CycleISum = persistence.CycleSamples = 0;
@@ -101,48 +104,55 @@ void menuRun()
 #endif
       break;
     case 'j':  //Reset Job Maxes
-      Console1.printf ("\nReset Job Timings \n");
+      Console2.printf ("\nReset Job Timings \n");
       for (int i = 14; i < 21; i++) RunMillis[i] = 0;  // Reset job timing stats
       break;
     case 'C': //Charger modes "NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"
       dashboard.ChrgPhase  ++;
       if (dashboard.ChrgPhase >= 13) dashboard.ChrgPhase  = 0;
-      Console1.print ("Char.Mode changed to " + ChrgPhase_description[dashboard.ChrgPhase] + "\n" );
+      Console2.print ("Char.Mode changed to " + ChrgPhase_description[dashboard.ChrgPhase] + "\n" );
       break;
     case 'A': //Ah Cycles "STOP", "RUN", "DAILY"
       persistence.AhMode  ++;
       if (persistence.AhMode  > DAILY) persistence.AhMode  = STOP;
       Runtime = AhCycle_description[persistence.AhMode];
-      Console1.print ("Ah.Mode changed to " + AhCycle_description[persistence.AhMode] + "\n" );
+      Console2.print ("Ah.Mode changed to " + AhCycle_description[persistence.AhMode] + "\n" );
       break;
     // ***One shot Reports**
     case 'S':  //Summary Report
-      Console1.printf ("\nSummary Report\n");
+      Console2.printf ("\nSummary Report\n");
       serialPage = 'S';
       break;
     case 'D':  //Debug Report
-      Console1.printf ("\nDebug Report\n");
+      Console2.printf ("\nDebug Report\n");
       serialPage = 'D';
       break;
     case 'X':  //Debug Report
-      Console1.printf ("\neXcel Calibration Report\n");
+      Console2.printf ("\neXcel Calibration Report\n");
       serialPage = 'X';
       break;
     case 'J':  //Debug Report
-      Console1.printf ("\nJob Timing\n");
+      Console2.printf ("\nJob Timing\n");
       serialPage = 'J';
       break;
     case 'P': //Parameter List
-      Console1.printf("Par.List \n Vout %6.2f CV %6.2f Iout %6.3f CC %6.3f", dashboard.Vout, dashboard.SetVout, dashboard.Iout, dashboard.SetIout );
+      Console2.printf("Par.List \n Vout %6.2f CV %6.2f Iout %6.3f CC %6.3f", dashboard.Vout, dashboard.SetVout, dashboard.Iout, dashboard.SetIout );
       break;
     case 't': // Print time
-      Console1.println(ctime(&now));
+      Console2.println(ctime(&now));
       break;
     case 'T': // Enter time
       //setTimefromSerial();
       break;
+#ifdef TELNET
+    case 'Q': // Logoff from telnet
+      TelnetStream.println("bye bye");
+      TelnetStream.flush();
+      TelnetStream.stop();
+      break;
+#endif
     case '~':  //Redio Report / WiFi
-      Console1.printf ("\nWiFi Status\n");
+      Console2.printf ("\nWiFi Status\n");
       serialPage = '~';
       break;
     case 'W': // Write persistence data to EEPROM (Adress = 100...)

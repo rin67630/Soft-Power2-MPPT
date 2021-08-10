@@ -1,8 +1,11 @@
+/* 
+ #include <WiFiMulti.h>
+WiFiMulti wifiMulti;
+ wifiMulti.addAP(ssid, password);
+ wifiMulti.addAP("ssid_from_AP_2", "your_password_for_AP_2");
+ wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
 
-
-
-/*
- * ESP 8266 code examples
+* ESP 8266 code examples
  * void light_sleep(){
    wifi_station_disconnect();
    wifi_set_opmode_current(NULL_MODE);

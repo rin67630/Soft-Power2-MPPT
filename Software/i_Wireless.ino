@@ -1,6 +1,6 @@
 void wirelessRun()
 {
-if (WiFi.status() != WL_CONNECTED)
+  if (WiFi.status() != WL_CONNECTED)
   {
     WiFi.disconnect();
     WiFi.reconnect();
@@ -94,6 +94,23 @@ if (WiFi.status() != WL_CONNECTED)
     }
     UDP.endPacket();
   }
+  if ((DayExpiring && (serialPeriodicity == 'd'))    ||
+      (HourExpiring && (serialPeriodicity == 'h'))   ||
+      (MinuteExpiring && (serialPeriodicity == 'm')) ||
+      (serialPeriodicity == 's') || (serialPeriodicity == '!'))
+  {
+    switch (serialPage)
+    {
+      case 'E':   // Energy plot
+        UDP.beginPacket(REPORT_TARGET, UDP_PORT + 1);
+        strftime(charbuff, sizeof(charbuff), "%d%b\t%R\t", timeinfo);
+        UDP.print(charbuff);
+        UDP.printf("SetVin:\t%06.3f\tVin:\t%06.3f\tSetVout:\t%06.3f\tVout:\t%06.3f\tSetIout:\t%06.3f\tIout\t:%06.3f\tWout:\t%+07.3f\n", dashboard.SetVin, dashboard.Vin, dashboard.SetVout, dashboard.Vout, dashboard.SetIout, dashboard.Iout, dashboard.Wout);
+        if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
+        UDP.endPacket();
+        break;
+    }
+  }
 #endif
 
   if (NewMinute)
@@ -111,9 +128,9 @@ if (WiFi.status() != WL_CONNECTED)
     pson thing_property;
     //Periodically retrieve the PID parameters, comment out once the PID Paramters are stable
     thing.get_property ("thing_property", thing_property);
-    P_value = thing_property["_P_value"]; 
-    I_value = thing_property["_I_value"]; 
-    D_value = thing_property["_D_value"]; 
+    P_value = thing_property["_P_value"];
+    I_value = thing_property["_I_value"];
+    D_value = thing_property["_D_value"];
     fractionVoc = thing_property["_fractionVoc"];
 
     //Periodically save the values that must persist after reboot
@@ -125,12 +142,12 @@ if (WiFi.status() != WL_CONNECTED)
     thing_property["HourSamples"] = persistence.HourSamples;
     if (I_value == 0)    // control parameters unitialized, set default values)
     {
-    P_value = 2;
-    thing_property["_P_value"]= 2;
-    I_value = 2;
-    thing_property["_I_value"] = 2;
-    fractionVoc = 0.8;
-    thing_property["_fractionVoc"] = 0.8;
+      P_value = 2;
+      thing_property["_P_value"] = 2;
+      I_value = 2;
+      thing_property["_I_value"] = 2;
+      fractionVoc = 0.8;
+      thing_property["_fractionVoc"] = 0.8;
     }
     thing.set_property("thing_property", thing_property, true);
     yield();

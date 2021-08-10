@@ -499,6 +499,10 @@ void setup()
   tft.fillScreen(TFT_BLACK);
 #endif
 
+#ifdef TELNET
+TelnetStream.begin();
+#endif
+
 #ifndef THINGER
   // read/write persistence from EEPROM (Adress = 100...)
   for ( int i = 0; i < sizeof(persistence); ++i ) persistence_punning[i] = EEPROM.read ( i + 100 );

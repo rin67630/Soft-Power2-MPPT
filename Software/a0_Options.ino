@@ -1,14 +1,14 @@
 // *** Component selection ***
 // Select Converter type, Controller type, Display type, ADC type
 
-#define CONTR_IS_HELTEC   //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                      Choice of ESP controller boards
+#define CONTR_IS_TTGO   //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                      Choice of ESP controller boards
 // N.B. Compile sketch with following board settings: 
 //- for option Wemos:          Wemos Lolin32
 //- for option TTGO:           TTGO T1 
 //- for option Heltec LoRa:    Heltec WiFi Lora32  (Not V2 !) 
-#define DISPLAY_IS_OLED     //_IS_OLED, _IS_LCD, _IS_NONE                         Choice of display
+#define DISPLAY_IS_LCD     //_IS_OLED, _IS_LCD, _IS_NONE                         Choice of display
 #define ADC_IS_ADS1115     //_IS_INA226, _IS_ADS1115, _IS_ESP, _IS_SIMULATED          Choice of ADC used
-#define CONV_IS_J3603
+#define CONV_IS_D6012
 
 // *** List of available battery header files ***, uncomment accordingly
 //#include "GEL12-12Ah.h"
@@ -32,6 +32,9 @@
 #define DATA_TARGET     "192.168.188.64"  // IP to forward data to a remote UDP Receiver
 //#define UDP_MASTER       // If this is the  master of a slave ESP
 //#define UDP_SLAVE        // If this is the  slave of a master ESP
+#define TELNET
+#define REPORT_TARGET     "192.168.188.64"  // IP to forward reports to a remote UDP Receiver
+#define PUBLISH_REPORT
 #define UDP_PORT   4212    // Ports to forward/receive data
 //#define _DEBUG_          // debug information over Network and Thinger to serial
 //#define BLUETOOTH        //Serial communication over bluetooth  (Exceeds available memory if not compiled with partition scheme minmal SPIFFS)
@@ -48,9 +51,9 @@
 // Presets according to personal projects
 #ifdef CONV_IS_D6012             // DROK 6012 Motherboard interface parameters
 #include "D6012.h"
-#define DEVICE_NAME      "SteroidsADS"
-#define THINGER_USERNAME "SoftPower1"      // "SoafPower1  SoftPower1" 
-//#define WRITE_BUCKETS    // comment out. if this is the second device)
+#define DEVICE_NAME      "D6012"
+#define THINGER_USERNAME "spthinger3"      // "SoafPower1  SoftPower1" 
+#define WRITE_BUCKETS    // comment out. if this is the second device)
 #endif
 
 #ifdef CONV_IS_J3603             //Juntek B3603 small DC-DC converter
@@ -62,9 +65,9 @@
 
 #ifdef CONV_IS_J3806             //Juntek B3603 small DC-DC converter
 #include "J3806.h"
-#define DEVICE_NAME      "SteroidsADS"
-#define THINGER_USERNAME "SoftPower1"      // "SoafPower1  SoftPower1" 
-#define WRITE_BUCKETS    // comment out. if this is the second device)
+#define DEVICE_NAME      "J3806"
+#define THINGER_USERNAME "spthinger3"      // "SoafPower1  SoftPower1" 
+//#define WRITE_BUCKETS    // comment out. if this is the second device)
 #endif
 
 #ifdef CONV_IS_D6008             // DROK 6008 Motherboard interface parameters
