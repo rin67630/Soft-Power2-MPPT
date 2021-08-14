@@ -1,9 +1,9 @@
 void menuRun()
 {
-  //  if (Year < 2020) setTimefromSerial();
-  if (Console0.available())   inbyte = Console0.read(); //Serial input available
+  if (Year < 2020) setTimefromSerial();
+  if (Serial.available())   inbyte = Console0.read();         //Serial input available
 #ifdef TELNET
-  if (TelnetStream.available())   inbyte = TelnetStream.read(); //Serial input available
+  if (TelnetStream.available())   inbyte = TelnetStream.read(); //Telnet input available
 #endif
   /*  // Provision for I2C Keyboard
     Wire.requestFrom(0x08, 1)
@@ -67,7 +67,7 @@ void menuRun()
 #ifdef DISPLAY_IS_OLED
       display.setContrast(255);
 #endif
-      Console2.printf ("D= %i \n", inbyte - 48);
+      Console2.printf ("Display= %i\n", inbyte - 48);
       break;
     case '9': //Cycle Displays
       cycleDisplay = true;
@@ -112,6 +112,7 @@ void menuRun()
       Console2.printf ("\nReset Job Timings \n");
       for (int i = 14; i < 21; i++) RunMillis[i] = 0;  // Reset job timing stats
       break;
+    //*** Changes of Modes ***
     case 'C': //Charger modes "NIGH", "RECO", "BULK", "PANL", "ABSO", "FLOA", "EQUA", "OVER", "DISC", "PAUS", "NOBA", "NOPA", "EXAM"
       dashboard.ChrgPhase  ++;
       if (dashboard.ChrgPhase >= 13) dashboard.ChrgPhase  = 0;
@@ -123,31 +124,35 @@ void menuRun()
       Runtime = AhCycle_description[persistence.AhMode];
       Console2.print ("Ah.Mode changed to " + AhCycle_description[persistence.AhMode] + "\n" );
       break;
+    case 'O': //Operation mode ""Manu ", "PVFx ", "MPPT "}"
+      dashboard.CtrlMode  ++;
+      if (dashboard.CtrlMode  > MPPT) dashboard.CtrlMode  = MANU;
+      Console2.print ("CtrlMode changed to " + CtrlMode_description[dashboard.CtrlMode] + "\n" );
+      break;
     // ***One shot Reports**
     case 'S':  //Summary Report
-      Console2.printf ("\nSummary Report\n");
       serialPage = 'S';
       break;
     case 'D':  //Debug Report
       Console2.printf ("\nDebug Report\n");
       serialPage = 'D';
       break;
-    case 'X':  //Debug Report
+    case 'X':  //Calibration Report
       Console2.printf ("\neXcel Calibration Report\n");
       serialPage = 'X';
       break;
-    case 'J':  //Debug Report
+    case 'J':  //Job duration Report
       Console2.printf ("\nJob Timing\n");
       serialPage = 'J';
       break;
     case 'P': //Parameter List
-      Console2.printf("Par.List \n Vout %6.2f CV %6.2f Iout %6.3f CC %6.3f", dashboard.Vout, dashboard.SetVout, dashboard.Iout, dashboard.SetIout );
+      Console2.printf("Par.List \nAhCycle= %i\t CtrlMode= %i\t ChrgPhase= %i I_value= %5.2f, MPPT_perturbe= %5.2f,  fractionVoc=  %5.2f \n", persistence.AhMode, dashboard.CtrlMode, dashboard.ChrgPhase, I_value, MPPT_perturbe, fractionVoc);
       break;
     case 't': // Print time
       Console2.println(ctime(&now));
       break;
     case 'T': // Enter time
-      //setTimefromSerial();
+      setTimefromSerial();
       break;
 #ifdef TELNET
     case 'Q': // Logoff from telnet
@@ -156,9 +161,44 @@ void menuRun()
       TelnetStream.stop();
       break;
 #endif
-    case '~':  //Redio Report / WiFi
-      Console2.printf ("\nWiFi Status\n");
-      serialPage = '~';
+    case '~':  //Redio Report / WiFi and enter wiFi credentials if not connected
+      if (WiFi.status() == WL_CONNECTED)
+      {
+        Console2.printf ("\nWiFi Status\n");
+        serialPage = '~';
+      } else {
+        // unconnected, need credentials
+        Console0.flush();
+        Console2.printf ("\nEnter SSID,Password");
+        while (Console0.available() == 0) {}
+        ssid = Console0.readStringUntil(',');        // store SSID
+        pass = Console0.readStringUntil('\n');        // store password
+        Console2.printf("\nTry conn' to '%s' (%u) , '%s' (%u) \n", ssid.c_str(), ssid.length(), pass.c_str(), pass.length());
+#ifdef TELNET
+        TelnetStream.println("bye bye");
+        TelnetStream.flush();
+        TelnetStream.stop();
+#endif
+        WiFi.disconnect();
+        delay(1000);
+        Console0.flush();
+        getWiFi();
+      }
+      break;
+
+    case '|': //Forget WiFi  !!!
+      Console2.printf ("\nForget WiFi and disconnect\n");
+#ifdef TELNET
+      TelnetStream.println("bye bye, cu @AP");
+      TelnetStream.flush();
+      TelnetStream.stop();
+#endif
+      WiFi.disconnect(true, true);
+      delay(1000);
+      Console4.printf("\nStarting Access point\n");
+      WiFi.softAP("SoftPower", WIFI_PASS);
+      ip = WiFi.softAPIP();
+      myIP(); Console2.printf ("\Now %s", charbuff);
       break;
     case 'W': // Write persistence data to EEPROM (Adress = 100...)
       for ( int i = 0; i < sizeof(persistence); ++i ) EEPROM.write ( i + 100,  persistence_punning[i] );
@@ -190,7 +230,7 @@ void menuRun()
       break;
     // ***Periodical Reports/Plots**
     case 'E':  //Energy Plot
-      Console2.printf ("\Energy Plot\n");
+      Console2.printf ("Energy Plot\n");
       serialPage = 'E';
       break;
   } //end switch (inbyte)

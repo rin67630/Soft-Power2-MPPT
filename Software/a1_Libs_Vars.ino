@@ -1,18 +1,20 @@
 // *** libraries*** (including with <> takes by priority global files, including with "" takes local files). 
 
 //#define _DISABLE_TLS_      (Workaround to circumvent a bug in TLS handling for Thinger.io versions >2.15, better use 2.14)
-#include <ArduinoOTA.h>    // from Library
+#include <ArduinoOTA.h>    // from Arduino Library
 #include <WiFi.h>          // built-in
+//#include <WiFiClient.h>
 //#include <WifiMulti.h>
 #include <WiFiUdp.h>       // built-in
+
 #include "time.h"          // built-in
 #include <FS.h>            // built-in
-#include <ThingerESP32.h>  // from Library (Thinger)
-#include <EEPROM.h>        // to be replaced by preferences
-#include <Wire.h>          // from Library (I2C)
-#include <MoToButtons.h>   // from Library (MoBaTools).
+#include <ThingerESP32.h>  // from Arduino Library (Thinger)
+#include <EEPROM.h>        // from Arduino Library
+#include <Wire.h>          // from Arduino Library (I2C)
+#include <MoToButtons.h>   // from Arduino Library (MoBaTools).
 #ifdef TELNET
-#include <TelnetStream.h>     // freom library (Lennart Hennings).
+#include <TelnetStream.h>     // from Arduino Library (Lennart Hennings).
 #endif
 
 // *** Optional libraries ***
@@ -125,7 +127,7 @@ boolean cycleDisplay = false;
 unsigned long lastTimePressed[3];
 unsigned int rotaryEncoderValue;
 long    action;
-boolean setpointMode;
+boolean setpointMode = true;
 // Parameters for MoToButtons
 #define MAX8BUTTONS     // This saves ressources if you don't need more than 8 buttons
 const byte buttonPins [] = { BUTTON_UP, BUTTON_DOWN, ROTARY_ENCODER_BUTTON_PIN };
@@ -231,6 +233,10 @@ float Wh[32];
 
 //*** Buffers ***
 static char charbuff[80];    //Char buffer for many functions
+String ssid;
+String pass;
+//static char ssid[16];
+//static char pass[16];
 
 #ifdef FET_EXTENSION
 float ADC_IExt0;
@@ -247,15 +253,15 @@ boolean Out_IExt3;
 // ***Serial Output Definitions***
 #ifdef TELNET
 //*** Aliases for serial communication***
-#define Console0 Serial        // Menu in
+#define Console0 TelnetStream         // Menu in
 #define Console1 TelnetStream  // Reports 
 #define Console2 TelnetStream  // Menu out
 #define Console3 TelnetStream  // Errors
 #define Console4 Serial        // Boot messages
 #else
 #define Console0 Serial   // Menu in
-#define Console1 Serial1  // Reports 
+#define Console1 Serial   // Reports 
 #define Console2 Serial   // Menu out
-#define Console3 Serial1  // Errors
+#define Console3 Serial   // Errors
 #define Console4 Serial   // Boot messages
 #endif

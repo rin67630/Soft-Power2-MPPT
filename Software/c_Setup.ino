@@ -4,6 +4,7 @@ void setup()
   delay(5000);
   // Serial initialisation
   Serial.begin (SERIAL_SPEED); // On USB port
+  Serial.setTimeout(60000);
   // Serial.setDebugOutput(true);
 
 #ifdef CONTR_IS_TTGO
@@ -30,7 +31,7 @@ void setup()
 #endif
 
   Console4.printf("\n\n\n\n\nDevice %s resetted!\n", DEVICE_NAME);
-  Console4.printf("ESP-Karajan framew. ready: Serial @ %u Baud\n", SERIAL_SPEED);
+  Console4.printf("ESP-Karajan framew. ready:\nSerial @ %u Baud\n", SERIAL_SPEED);
 
   Console4.printf("Initializing IO \n");
   pinMode(BUTTON_UP, INPUT_PULLUP);
@@ -141,12 +142,15 @@ void setup()
   display.display();
 #endif
 
-  Console4.printf("Connecting to %s", WIFI_SSID);
+#ifdef CREDENTIALS
+ssid = WIFI_SSID;
+pass = WIFI_PASS;
+#endif
+
+  Console4.printf("Init WiFi ");
   // Networking and Time
-  WiFi.mode(WIFI_STA);
-
+  
   getWiFi();
-
   delay(100);
 
   if (WiFi.status() == WL_CONNECTED)
@@ -206,7 +210,7 @@ void setup()
     getNTP();
 
 #ifdef THINGER
-    Console4.printf("Initializing Thinger, Username= %s \n", THINGER_USERNAME);
+    Console4.printf("\nInitializing Thinger, Username= %s \n", THINGER_USERNAME);
 
     //Communication with Thinger.io
     thing.handle();
@@ -416,7 +420,7 @@ void setup()
 
     // Controller Settings
     P_value = thing_property["_P_value"];
-    I_value = thing_property["_I_value"];
+    I_value = thing_property["_I_value"]; 
     D_value = thing_property["_D_value"];
     MPPT_perturbe = thing_property["_MPPT_perturbe"];
     fractionVoc = thing_property["_fractionVoc"];

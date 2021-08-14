@@ -66,18 +66,18 @@ void statsRun()
   if (DayExpiring)                          // trace of the last 4 days
   {
     //Keeping history of the last 5 days
-    Ah[27] = Ah[26];
-    Ah[28] = Ah[27];
-    Ah[29] = Ah[28];
     Ah[30] = Ah[29];
-    VoutAvg[27] = VoutAvg[26];
-    VoutAvg[28] = VoutAvg[27];
-    VoutAvg[29] = VoutAvg[28];
+    Ah[29] = Ah[28];
+    Ah[28] = Ah[27];
+    Ah[27] = Ah[26];
     VoutAvg[30] = VoutAvg[29];
-    Wh[27] = Wh[26];
-    Wh[28] = Wh[27];
-    Wh[29] = Wh[28];
+    VoutAvg[29] = VoutAvg[28];
+    VoutAvg[28] = VoutAvg[27];
+    VoutAvg[27] = VoutAvg[26];
     Wh[30] = Wh[29];
+    Wh[29] = Wh[28];
+    Wh[28] = Wh[27];
+    Wh[27] = Wh[26];
     persistence.voltageDelta = dashboard.Vout - persistence.voltageAt0H; // set ranges at 33:53:59
     persistence.voltageAt0H  = dashboard.Vout;  // taking the voltage at 23:55 to evaluate if the battery gained/lost during the previous day
   }

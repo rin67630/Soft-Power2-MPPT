@@ -75,7 +75,7 @@ void wirelessRun()
     UDP.beginPacket(REPORT_TARGET, UDP_PORT + 1);
     if (DayExpiring)
     {
-      UDP.printf("\nHour|   Ah    |    V    |    W    |\n");
+      UDP.printf("\nMidnight Report\nHour|   Ah    |    V    |    W    |\n");
       for  (byte n = 0; n < 31; n++)
       {
         if (n == 24)
@@ -99,10 +99,10 @@ void wirelessRun()
   if (MinuteExpiring )
   {
     UDP.beginPacket(REPORT_TARGET, UDP_PORT + 1);
-    if (HourExpiring) UDP.printf("Date\tTime\tSetVin:\tVin:\tSetVout:\tVout:\tSetIout:\tIout\tWout:\n");
+    if (Minute == 0) UDP.printf("Date\tTime\tSetVi:\tVin:\tSetVo:\tVout:\tSetIo:\tIout\tWout:\n");
     strftime(charbuff, sizeof(charbuff), "%d%b\t%R\t", timeinfo);
     UDP.print(charbuff);
-    UDP.printf("%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%+07.3f\n", dashboard.SetVin, dashboard.Vin, dashboard.SetVout, dashboard.Vout, dashboard.SetIout, dashboard.Iout, dashboard.Wout);
+    UDP.printf("%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%06.3f\t%07.2f\n", dashboard.SetVin, dashboard.Vin, dashboard.SetVout, dashboard.Vout, dashboard.SetIout, dashboard.Iout, dashboard.Wout);
     UDP.endPacket();
   }
 #endif

@@ -1,14 +1,14 @@
 // *** Component selection ***
 // Select Converter type, Controller type, Display type, ADC type
 
-#define CONTR_IS_TTGO   //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                      Choice of ESP controller boards
+#define CONTR_IS_TTGO   //_IS_HELTEC, _IS_WEMOS; _IS_TTGO                                 Choice of ESP controller boards
 // N.B. Compile sketch with following board settings: 
 //- for option Wemos:          Wemos Lolin32
 //- for option TTGO:           TTGO T1 
 //- for option Heltec LoRa:    Heltec WiFi Lora32  (Not V2 !) 
-#define DISPLAY_IS_LCD     //_IS_OLED, _IS_LCD, _IS_NONE                         Choice of display
-#define ADC_IS_ADS1115     //_IS_INA226, _IS_ADS1115, _IS_ESP, _IS_SIMULATED          Choice of ADC used
-#define CONV_IS_D6012
+#define DISPLAY_IS_LCD         //_IS_OLED, _IS_LCD, _IS_NONE                              Choice of display
+#define ADC_IS_SIMULATED         //_IS_INA226, _IS_ADS1115, _IS_ESP, _IS_SIMULATED          Choice of ADC used
+#define CONV_IS_SIMULATED
 
 // *** List of available battery header files ***, uncomment accordingly
 //#include "GEL12-12Ah.h"
@@ -31,9 +31,11 @@
 #define SERIAL_SPEED      115200  //9600  115200 230400
 #define DATA_TARGET     "192.168.188.64"  // IP to forward data to a remote UDP slave (another ESP)
 #define UDP_PORT   4212    // Ports to forward/receive data
-//#define UDP_MASTER       // If this is the  master of a slave ESP
+//#define UDP_MASTER       // If this is the  master of a slave ESP (remote display)
 //#define UDP_SLAVE        // If this is the  slave of a master ESP
-#define TELNET
+//#define TELNET           // Serial communication over Telnet
+//#define DEFAULT_AP         // Default Accesspoint SoftPower" if Wifi fails
+//#define CREDENTIALS        // Credentials from Credentials.h override those stored from Menu
 #define REPORT_TARGET     "192.168.188.64"  // IP to forward reports to a remote UDP Receiver e.g. a Raspberry Pi.
 #define PUBLISH_REPORT       //Midnight report with Ah per hour
 #define PUBLISH_MINUTE_LOG   //Minutely log of valuesand setpoints

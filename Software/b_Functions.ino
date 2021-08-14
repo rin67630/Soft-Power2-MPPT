@@ -11,7 +11,7 @@ ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS)
 #endif
 
 
- 
+
 
 MoToButtons Buttons( buttonPins, buttonCount, 130, 5000 ); //  130ms debounce. 5 s to distinguish short/long
 
@@ -60,11 +60,18 @@ void rotary_onButtonClick()
 // ************WiFi Managemement****************
 void getWiFi()
 {
-  if (WiFi.status() != WL_CONNECTED)
+  if ((WiFi.status() != WL_CONNECTED))
   {
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    WiFi.mode(WIFI_STA);
+    if (ssid.length() && pass.length()) 
+    {
+      WiFi.begin(ssid.c_str(), pass.c_str());
+    }else{
+      WiFi.begin();
+    }
+//    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    //    WiFi.begin();
     wifiConnectCounter = 1;
-    Console4.println();
     while (WiFi.status() != WL_CONNECTED)
     {
       delay(wifiRepeatInterval);
@@ -72,23 +79,32 @@ void getWiFi()
       wifiConnectCounter++;
       if (wifiConnectCounter > wifiMaxTries)
       {
-        Console4.printf("\n\nBad SSID or PASS?\n");
+        Console4.printf("\nIs %s , %s OK? -> Menu, enter ~", ssid.c_str(), pass.c_str());
         WiFi.disconnect();
-        Console4.printf("\nRunning offline, enter time date & time (dd/mm/yyyy hh:mm:ss) before using the menu\n");
+        Console4.printf("\nRunning offline\n");
+        WiFi.softAP("SoftPower", WIFI_PASS);
+        ip = WiFi.softAPIP();
         break;
       }
     }
     delay(50);
     WiFi.setHostname(DEVICE_NAME);
   }
-  ip = WiFi.localIP();
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    ip = WiFi.localIP();
+  } else {
+    Console4.printf("\nStarting Access point\n");
+    WiFi.softAP("SoftPower", WIFI_PASS);
+    ip = WiFi.softAPIP();
+  }
   Console4.print("\nDone: RRSI= ");   Console4.print(WiFi.RSSI());
-  sprintf(charbuff, "dB, IP= %03d . %03d . %03d . %03d \n",  ip[0], ip[1], ip[2], ip[3]);  Console4.printf(charbuff);
+  myIP();  Console4.printf(charbuff);
 }
 
-void myIP()
+void myIP()    // needed to 
 {
-  sprintf(charbuff, "IP= %03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
+  sprintf(charbuff, " IP= %03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
 }
 
 //********* Time management*************
@@ -126,17 +142,19 @@ void buffTimeData()   // writes the time/date in Charbuff for print or display
   strftime(charbuff, sizeof(charbuff), " %R %d%b ", timeinfo);
 }
 
-void setTimefromSerial()           // Enter time over serial
+void setTimefromSerial()           // Enter time over Serial/Telnet
 {
-  if (Serial.available() > 0)
+  Console2.printf ("\nEnter Date/Time dd/mm/yyyy hh:mm:ss\n");
+  while (Console0.available() == 0){}
+  while (Console0.available() != 0)
   {
     // read in the user input
-    Day = Serial.parseInt();
-    Month = Serial.parseInt();
-    Year = Serial.parseInt();
-    Hour = Serial.parseInt();
-    Minute = Serial.parseInt();
-    Second = Serial.parseInt();
+    Day = Console0.parseInt();
+    Month = Console0.parseInt();
+    Year = Console0.parseInt();
+    Hour = Console0.parseInt();
+    Minute = Console0.parseInt();
+    Second = Console0.parseInt();
     boolean validDate = (inRange(Day, 1, 31) && inRange(Month, 1, 12) && inRange(Year, 2021, 2031));
     boolean validTime = (inRange(Hour, 0, 23) && inRange(Minute, 0, 59) && inRange(Second, 0, 59));
     if (validTime && validDate)
@@ -146,18 +164,23 @@ void setTimefromSerial()           // Enter time over serial
       tzset();
       struct tm t;                         //Prepare time strucure
       time_t t_of_day;
-      t.tm_year = Year - 1900; // Year - 1900
-      t.tm_mon = Month - 1;     // Month, where 0 = jan
-      t.tm_mday = Day ;      // Day of the month
+      t.tm_year = Year - 1900;             // Year - 1900
+      t.tm_mon = Month - 1;                // Month, where 0 = jan
+      t.tm_mday = Day ;                    // Day of the month
       t.tm_hour = Hour;
       t.tm_min = Minute;
       t.tm_sec = Second;
-      t.tm_isdst = -1;         // Is DST on? 1 = yes, 0 = no, -1 = unknown
+      t.tm_isdst = -1;                     // Is DST on? 1 = yes, 0 = no, -1 = unknown
       t_of_day = mktime(&t);
       struct timeval tv;                   //Extending to mandatory microseconds
-      tv.tv_sec = t_of_day;  // epoch time (seconds)
-      tv.tv_usec = 0;    // microseconds
+      tv.tv_sec = t_of_day;                // epoch time (seconds)
+      tv.tv_usec = 0;                      // microseconds
       settimeofday(&tv, 0);                //Setting Clock
+      Console0.flush();
+      getEpoch();
+      inbyte = 't';
+    } else {
+      Console2.print ("Sorry, try again");
     }
   }
 }
