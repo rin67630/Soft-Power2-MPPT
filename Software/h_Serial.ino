@@ -13,7 +13,7 @@ void serialRun()
         if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
         break;
       case 'D':   // Debug Report
-        Console1.printf("Vin:%06.3f SetVin:%06.3f Iin:%06.3f Vout:%06.3f SetVout:%06.3f Iout:%06.3f SetIout:%06.3f ConIout:%06.3f" , dashboard.Vin, dashboard.SetVin, dashboard.Iin, dashboard.Vout, dashboard.SetVout, dashboard.Iout, dashboard.SetIout, dashboard.ConIout); 
+        Console1.printf("Vin:%06.3f SetVin:%06.3f Iin:%06.3f Vout:%06.3f SetVout:%06.3f Iout:%06.3f SetIout:%06.3f ConIout:%06.3f\n" , dashboard.Vin, dashboard.SetVin, dashboard.Iin, dashboard.Vout, dashboard.SetVout, dashboard.Iout, dashboard.SetIout, dashboard.ConIout); 
         if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
         break;
       case 'X':   // eXcel Calibration report

@@ -1,10 +1,10 @@
 void menuRun()
 {
-  if (Year < 2020) setTimefromSerial();
-  if (Serial.available())   inbyte = Console0.read();         //Serial input available
+  if (Year < 2020) setTimefromStream();
 #ifdef TELNET
   if (TelnetStream.available())   inbyte = TelnetStream.read(); //Telnet input available
 #endif
+  if (Serial.available())   inbyte = Serial.read();         //Serial input available
   /*  // Provision for I2C Keyboard
     Wire.requestFrom(0x08, 1)
     while (Wire.available())
@@ -23,7 +23,7 @@ void menuRun()
   if ( Buttons.longPress(UP) || Buttons.longPress(DOWN) ||  Buttons.longPress(ROT)  )
   {
     setpointMode = not setpointMode;
-    Console4.printf("setpointMode is %s\n", setpointMode ? "on" : "off" );
+    Console2.printf("SetpointMode is %s\n", setpointMode ? "on" : "off" );
   }
   if ( Buttons.shortPress(UP) )
   {
@@ -92,7 +92,6 @@ void menuRun()
       delay(10000);
 #ifdef TELNET
       TelnetStream.println("bye bye");
-      TelnetStream.flush();
       TelnetStream.stop();
 #endif
       ESP.restart();
@@ -145,14 +144,14 @@ void menuRun()
       Console2.printf ("\nJob Timing\n");
       serialPage = 'J';
       break;
-    case 'P': //Parameter List
-      Console2.printf("Par.List \nAhCycle= %i\t CtrlMode= %i\t ChrgPhase= %i I_value= %5.2f, MPPT_perturbe= %5.2f,  fractionVoc=  %5.2f \n", persistence.AhMode, dashboard.CtrlMode, dashboard.ChrgPhase, I_value, MPPT_perturbe, fractionVoc);
+    case 'I':  //Internal Parameter List
+      Console2.printf("Int.Par.List \nAhCycle= %i\t CtrlMode= %i\t ChrgPhase= %i I_value= %5.2f, MPPT_perturbe= %5.2f,  fractionVoc=  %5.2f \n", persistence.AhMode, dashboard.CtrlMode, dashboard.ChrgPhase, I_value, MPPT_perturbe, fractionVoc);
       break;
-    case 't': // Print time
+    case 't':  // Print time
       Console2.println(ctime(&now));
       break;
     case 'T': // Enter time
-      setTimefromSerial();
+      setTimefromStream();        // blocking!
       break;
 #ifdef TELNET
     case 'Q': // Logoff from telnet
@@ -161,46 +160,42 @@ void menuRun()
       TelnetStream.stop();
       break;
 #endif
-    case '~':  //Redio Report / WiFi and enter wiFi credentials if not connected
+    case 'W':  // WiFi status and enter wiFi credentials if not connected
       if (WiFi.status() == WL_CONNECTED)
       {
         Console2.printf ("\nWiFi Status\n");
+
         serialPage = '~';
       } else {
         // unconnected, need credentials
-        Console0.flush();
-        Console2.printf ("\nEnter SSID,Password");
-        while (Console0.available() == 0) {}
-        ssid = Console0.readStringUntil(',');        // store SSID
-        pass = Console0.readStringUntil('\n');        // store password
-        Console2.printf("\nTry conn' to '%s' (%u) , '%s' (%u) \n", ssid.c_str(), ssid.length(), pass.c_str(), pass.length());
-#ifdef TELNET
-        TelnetStream.println("bye bye");
-        TelnetStream.flush();
-        TelnetStream.stop();
-#endif
-        WiFi.disconnect();
-        delay(1000);
-        Console0.flush();
-        getWiFi();
+        setWiFifromStream();     // blocking!
       }
       break;
-
-    case '|': //Forget WiFi  !!!
-      Console2.printf ("\nForget WiFi and disconnect\n");
+    case 'w': //Forget WiFi  !!!
+      Console2.printf ("\nForget WiFi & BECOME LOCAL AP! Confirm? Y or N\n");
+      while ( Console0.available() )
+      {
+        Console0.read(); //flush the rest
+      }
+      while (not Console0.available())
+      {}
+      // read in the user input
+      switch (Console0.read())
+      {
+        default:
+          Console2.printf ("\n that's a wise decision!\n");
+          break;
+        case 'Y':
+          Console2.printf ("\n Y? you have been warned!\n");
 #ifdef TELNET
-      TelnetStream.println("bye bye, cu @AP");
-      TelnetStream.flush();
-      TelnetStream.stop();
+          TelnetStream.println("bye bye, cu @AP");
+          TelnetStream.stop();
 #endif
-      WiFi.disconnect(true, true);
-      delay(1000);
-      Console4.printf("\nStarting Access point\n");
-      WiFi.softAP("SoftPower", WIFI_PASS);
-      ip = WiFi.softAPIP();
-      myIP(); Console2.printf ("\Now %s", charbuff);
+          AP_mode();
+          break;
+      }
       break;
-    case 'W': // Write persistence data to EEPROM (Adress = 100...)
+    case 'P': // Write persistence data to EEPROM (Adress = 100...)
       for ( int i = 0; i < sizeof(persistence); ++i ) EEPROM.write ( i + 100,  persistence_punning[i] );
       EEPROM.commit();
       memcpy(persistence_punning, &persistence, sizeof(persistence));

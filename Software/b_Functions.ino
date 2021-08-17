@@ -10,11 +10,7 @@ WiFiUDP UDP; // Creation of wifi Udp instance
 ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS);
 #endif
 
-
-
-
 MoToButtons Buttons( buttonPins, buttonCount, 130, 5000 ); //  130ms debounce. 5 s to distinguish short/long
-
 
 #ifdef CONTR_IS_WEMOS
 SSD1306Wire display(0x3c, I2C_SCL, I2C_SDA);                  //OLED 128*64 soldered
@@ -63,13 +59,13 @@ void getWiFi()
   if ((WiFi.status() != WL_CONNECTED))
   {
     WiFi.mode(WIFI_STA);
-    if (ssid.length() && pass.length()) 
+    if (ssid.length() && pass.length())
     {
       WiFi.begin(ssid.c_str(), pass.c_str());
-    }else{
+    } else {
       WiFi.begin();
     }
-//    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    //    WiFi.begin(WIFI_SSID, WIFI_PASS);
     //    WiFi.begin();
     wifiConnectCounter = 1;
     while (WiFi.status() != WL_CONNECTED)
@@ -79,11 +75,8 @@ void getWiFi()
       wifiConnectCounter++;
       if (wifiConnectCounter > wifiMaxTries)
       {
-        Console4.printf("\nIs %s , %s OK? -> Menu, enter ~", ssid.c_str(), pass.c_str());
-        WiFi.disconnect();
-        Console4.printf("\nRunning offline\n");
-        WiFi.softAP("SoftPower", WIFI_PASS);
-        ip = WiFi.softAPIP();
+        Console4.printf("\nIs %s , %s OK? -> else redo w", ssid.c_str(), pass.c_str());
+        AP_mode();
         break;
       }
     }
@@ -102,9 +95,42 @@ void getWiFi()
   myIP();  Console4.printf(charbuff);
 }
 
-void myIP()    // needed to 
+void AP_mode()
 {
-  sprintf(charbuff, " IP= %03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
+      WiFi.disconnect(true, true);
+      delay(1000);
+      Console4.printf("\nStarting Access point\n");
+      WiFi.softAP("SoftPower", WIFI_PASS);
+      ip = WiFi.softAPIP();
+      myIP(); Console2.printf ("\nNow %s\n", charbuff);  
+}
+
+void setWiFifromStream()           // Enter WiFi over Serial/Telnet (Blocking!)
+{
+  Console2.printf ("\nEnter <SSID Password> (with the <>!)\n");
+  while (not Console0.available())
+  {}
+  // read in the user input
+  ssid = Console0.readStringUntil('<');        // ignore evrything up to <  (SSID will be overwritten next)
+  ssid = Console0.readStringUntil(' ');        // store SSID
+  pass = Console0.readStringUntil('>');        // store password
+  while ( Console0.available() )
+  {
+    Console0.read(); //flush the rest
+  }
+  Console2.printf("\n Going to '%s'(%u), '%s'(%u)\n", ssid.c_str(), ssid.length(), pass.c_str(), pass.length());
+#ifdef TELNET
+  TelnetStream.println("bye bye");
+  TelnetStream.stop();
+#endif
+  WiFi.disconnect();
+  delay(1000);
+  getWiFi();
+}
+
+void myIP()    // generate a charbuff string with the IP (for displays that cannot use the Posix Print)
+{
+  sprintf(charbuff, " IP=%03d.%03d.%03d.%03d", ip[0], ip[1], ip[2], ip[3]);
 }
 
 //********* Time management*************
@@ -142,46 +168,43 @@ void buffTimeData()   // writes the time/date in Charbuff for print or display
   strftime(charbuff, sizeof(charbuff), " %R %d%b ", timeinfo);
 }
 
-void setTimefromSerial()           // Enter time over Serial/Telnet
+void setTimefromStream()           // Enter time over Serial/Telnet (Blocking!)
 {
   Console2.printf ("\nEnter Date/Time dd/mm/yyyy hh:mm:ss\n");
-  while (Console0.available() == 0){}
-  while (Console0.available() != 0)
+  while (not Console0.available())
+  {}
+  // read in the user input
+  Day = Console0.parseInt();
+  Month = Console0.parseInt();
+  Year = Console0.parseInt();
+  Hour = Console0.parseInt();
+  Minute = Console0.parseInt();
+  Second = Console0.parseInt();
+  boolean validDate = (inRange(Day, 1, 31) && inRange(Month, 1, 12) && inRange(Year, 2021, 2031));
+  boolean validTime = (inRange(Hour, 0, 23) && inRange(Minute, 0, 59) && inRange(Second, 0, 59));
+  if (validTime && validDate)
   {
-    // read in the user input
-    Day = Console0.parseInt();
-    Month = Console0.parseInt();
-    Year = Console0.parseInt();
-    Hour = Console0.parseInt();
-    Minute = Console0.parseInt();
-    Second = Console0.parseInt();
-    boolean validDate = (inRange(Day, 1, 31) && inRange(Month, 1, 12) && inRange(Year, 2021, 2031));
-    boolean validTime = (inRange(Hour, 0, 23) && inRange(Minute, 0, 59) && inRange(Second, 0, 59));
-    if (validTime && validDate)
-    {
-      configTime(0, 0, "pool.ntp.org");    // Repair timezone
-      setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 3);
-      tzset();
-      struct tm t;                         //Prepare time strucure
-      time_t t_of_day;
-      t.tm_year = Year - 1900;             // Year - 1900
-      t.tm_mon = Month - 1;                // Month, where 0 = jan
-      t.tm_mday = Day ;                    // Day of the month
-      t.tm_hour = Hour;
-      t.tm_min = Minute;
-      t.tm_sec = Second;
-      t.tm_isdst = -1;                     // Is DST on? 1 = yes, 0 = no, -1 = unknown
-      t_of_day = mktime(&t);
-      struct timeval tv;                   //Extending to mandatory microseconds
-      tv.tv_sec = t_of_day;                // epoch time (seconds)
-      tv.tv_usec = 0;                      // microseconds
-      settimeofday(&tv, 0);                //Setting Clock
-      Console0.flush();
-      getEpoch();
-      inbyte = 't';
-    } else {
-      Console2.print ("Sorry, try again");
-    }
+    configTime(0, 0, "pool.ntp.org");    // Repair timezone
+    setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 3);
+    tzset();
+    struct tm t;                         //Prepare time strucure
+    time_t t_of_day;
+    t.tm_year = Year - 1900;             // Year - 1900
+    t.tm_mon = Month - 1;                // Month, where 0 = jan
+    t.tm_mday = Day ;                    // Day of the month
+    t.tm_hour = Hour;
+    t.tm_min = Minute;
+    t.tm_sec = Second;
+    t.tm_isdst = -1;                     // Is DST on? 1 = yes, 0 = no, -1 = unknown
+    t_of_day = mktime(&t);
+    struct timeval tv;                   //Extending to mandatory microseconds
+    tv.tv_sec = t_of_day;                // epoch time (seconds)
+    tv.tv_usec = 0;                      // microseconds
+    settimeofday(&tv, 0);                //Setting Clock
+    getEpoch();
+    Console2.println(ctime(&now));
+  } else {
+    Console2.print ("Sorry, try again");
   }
 }
 

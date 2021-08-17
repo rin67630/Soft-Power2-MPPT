@@ -127,7 +127,7 @@ boolean cycleDisplay = false;
 unsigned long lastTimePressed[3];
 unsigned int rotaryEncoderValue;
 long    action;
-boolean setpointMode = true;
+boolean setpointMode;
 // Parameters for MoToButtons
 #define MAX8BUTTONS     // This saves ressources if you don't need more than 8 buttons
 const byte buttonPins [] = { BUTTON_UP, BUTTON_DOWN, ROTARY_ENCODER_BUTTON_PIN };
@@ -253,7 +253,7 @@ boolean Out_IExt3;
 // ***Serial Output Definitions***
 #ifdef TELNET
 //*** Aliases for serial communication***
-#define Console0 TelnetStream         // Menu in
+#define Console0 TelnetStream  // Menu in
 #define Console1 TelnetStream  // Reports 
 #define Console2 TelnetStream  // Menu out
 #define Console3 TelnetStream  // Errors

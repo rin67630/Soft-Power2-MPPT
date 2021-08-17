@@ -525,6 +525,10 @@ TelnetStream.begin();
     dashboard.SetVin = dashboard.ConVin = PANEL_MPP;
     lastADC_Vout = lastADC_Iout = 500;
   }
-  Console4.println("Ready to accept serial commands..." );
+#ifdef TELNET
+  Console4.print("Ready to accept TELNET commands\n " );
+  TelnetStream.print("Ready to accept commands\n " );#else
+  Console4.print("Ready to accept Serial commands\n " );
+#endif  
 }
 //end Setup

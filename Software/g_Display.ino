@@ -17,14 +17,14 @@ void displayRun()
           if (action > 0) ++ persistence.AhMode;
           if (action < 0) -- persistence.AhMode;
           if (persistence.AhMode > DAILY) persistence.AhMode = STOP;
-          Console4.print ("AhCycle changed to " + AhCycle_description[persistence.AhMode] + "\n" );
+          Console2.print ("AhCycle changed to " + AhCycle_description[persistence.AhMode] + "\n" );
           Runtime = AhCycle_description[persistence.AhMode];
           break;
         case 2:
           if (action > 0) ++ dashboard.CtrlMode;
           if (action < 0) -- dashboard.CtrlMode;
           if (dashboard.CtrlMode > MPPT) dashboard.CtrlMode = MANU;
-          Console4.print ("Oper. changed to " + CtrlMode_description[dashboard.CtrlMode] + "\n" );
+          Console2.print ("Oper. changed to " + CtrlMode_description[dashboard.CtrlMode] + "\n" );
           break;
         case 3:
           dashboard.SetVout += float(action * abs(action)) / 100;
@@ -39,7 +39,7 @@ void displayRun()
           
           break;
         default:
-          Console4.println ("no set point here!");
+          Console2.println ("no set point here!");
       }
     } else {
       // Process screen changes
