@@ -46,7 +46,7 @@ Over the serial interface you can enter directly the screen number 1-8 , this pr
 # Operation over serial, buttons and rotary encoder
 
 ## Set points or modes of operation
-A long press >5 seconds on either button up, down, or rotary button enters the set point mode.
+A long press >10 seconds on either button up, down, or rotary button enters the set point mode.
 
 Which value is changed is ruled by the current screen:
 - on screen 1 value changes the Ah integration mode between Stop, Run and Daily,
@@ -87,9 +87,11 @@ The serial commands from previous versions:
 - % (toggle between coarse and fine), 
 - <,> change current
 - {,} change Vin setpoint
-- O Operation
-- A Ah mode change
-have been removed, there is no more need for them any more.
+have **been removed**, there is no more need for them any more.
+
+- O Operation mode change Manu, PvFx,MPPT
+- A Ah mode change Stop, Run and Daily
+are now redundant
 
 ## Reports control over serial
 
@@ -98,7 +100,8 @@ Reports can only be controlled over serial.
 ### Setting the pace for periodical reports
 The pace for periodical reports is given with a lower case prefix:  
 's', 'm', 'h', 'd' staying for every second, minutely, hourly, daily.  
-Once the pace for periodical reports is given, it stays valid for every report called after, until another pace is choosen or a '!' stop command is entered.  
+Once the pace for periodical reports is given, it stays valid for every report called after, 
+until another pace is choosen or a '!' stop command is entered.  
 
 ### Periodical reports
 currently the following periodical reports are available (more to come)
@@ -114,6 +117,8 @@ Vset:14.500 Vout:14.434 Iset:00.650 Iout:00.045 Wout:+00.566
 #### "X":  // EXcel report for calibration
 
 #### "J":   // Job duration report for debugging purposes.
+
+#### "j":   // Reset Job duration totals
 
 example: If you type "sE" you will get the energy report issued every second, if you type "mE" to get the same report issued every minute.
 
@@ -161,19 +166,28 @@ Extra hours 25:H-1, 26:today, 27:D-1, 28:D-2..
 30  | +01.970 | +12.096 | +23.828 |
 ```
 
+
+#### "I":   // Prints internal parameters for debugging purposes.
+
 #### 't': // Print time
 Thu Apr 15 15:49:19 2021
 
-#### 'T': // Enter time
+#### 'T': // Enter time  **Blocking command**
 this command is only useful off-line, with an Internet connection the time is given from the NTP server.
+
+#### "W":   // wiFi report : Field stength -IP Address  / *if not connected* Enter WiFi access data.  **Blocking command**
+               WiFi access data survive resets.
+
+#### "w":   // WiFi disconnect and enter in AP mode  (This can cut you from Access if you are remote)
 
 ## System commands
 
 ### 'Z' System reset
 ### 'z' reset integration values
-### 'W' write parameters to EEPROM (if no thinger)
+
+### 'P' write Persistance Data to EEPROM (if no thinger)
 This command writes the persistaence parameters to EEPROM, so that a subsequent reset will restore the Ah and Wh integration values to continue seamlessly.
-If thinger.io is active, persistance will be automatically taken over by this server, so resets will mainly preserve data, without need to call 'W'
+If thinger.io is active, persistance will be automatically taken over by this server, so resets will mainly preserve data, without need to call 'P'
 
 
  
