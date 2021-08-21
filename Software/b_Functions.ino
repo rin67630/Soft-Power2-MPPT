@@ -6,6 +6,7 @@
 //****** Instantiations ******
 WiFiUDP UDP; // Creation of wifi Udp instance
 
+
 #ifdef THINGER
 ThingerESP32 thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS);
 #endif
@@ -95,14 +96,26 @@ void getWiFi()
   myIP();  Console4.printf(charbuff);
 }
 
+class RefreshThinger : public ThingerESP32 {
+  public:
+    RefreshThinger(const char* user, const char* device, const char* device_credential) :
+      ThingerESP32(user, device, device_credential) {}
+  protected:
+    virtual void thinger_state_listener(THINGER_STATE state) {
+      // call current implementation (debug)
+      ThingerESP32::thinger_state_listener(state);
+      if (state) thing.handle();
+    }
+};
+
 void AP_mode()
 {
-      WiFi.disconnect(true, true);
-      delay(1000);
-      Console4.printf("\nStarting Access point\n");
-      WiFi.softAP("SoftPower", WIFI_PASS);
-      ip = WiFi.softAPIP();
-      myIP(); Console2.printf ("\nNow %s\n", charbuff);  
+  WiFi.disconnect(true, true);
+  delay(1000);
+  Console4.printf("\nStarting Access point\n");
+  WiFi.softAP("SoftPower", WIFI_PASS);
+  ip = WiFi.softAPIP();
+  myIP(); Console2.printf ("\nNow %s\n", charbuff);
 }
 
 void setWiFifromStream()           // Enter WiFi over Serial/Telnet (Blocking!)

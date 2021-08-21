@@ -15,6 +15,8 @@ void setup()
   Wire.begin(I2C_SDA, I2C_SCL);
 #endif
 
+
+
 #ifdef CONTR_IS_HELTEC
   Wire.begin(SDA_OLED, SCL_OLED);
   //  Heltec.begin(false /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
@@ -527,7 +529,8 @@ TelnetStream.begin();
   }
 #ifdef TELNET
   Console4.print("Ready to accept TELNET commands\n " );
-  TelnetStream.print("Ready to accept commands\n " );#else
+  TelnetStream.print("Ready to accept commands\n " );
+#else
   Console4.print("Ready to accept Serial commands\n " );
 #endif  
 }

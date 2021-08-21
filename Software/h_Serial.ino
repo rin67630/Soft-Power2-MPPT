@@ -43,8 +43,8 @@ void serialRun()
         }
         serialPage = 0;
         break;
-      case '~':   // WiFi status report
-        Console1.print(" RRSI= ");   Console1.print(WiFi.RSSI()); Console1.print("dB, IP= "); myIP(); Console1.printf(charbuff);
+      case 'w':   // WiFi status report
+        Console1.print(" RRSI= ");   Console1.print(WiFi.RSSI()); Console1.print("dB, IP= "); myIP(); Console1.println(charbuff);
         if (serialPeriodicity == '!') serialPage = 0; // One shot reset serial page.
         break;
     }  // end switch (serialPage)

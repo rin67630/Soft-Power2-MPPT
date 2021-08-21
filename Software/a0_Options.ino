@@ -33,7 +33,7 @@
 #define UDP_PORT   4212    // Ports to forward/receive data
 //#define UDP_MASTER       // If this is the  master of a slave ESP (remote display)
 //#define UDP_SLAVE        // If this is the  slave of a master ESP
-//#define TELNET           // Serial communication over Telnet
+#define TELNET           // Serial communication over Telnet
 //#define CREDENTIALS        // Credentials from Credentials.h override those stored from Menu
 #define REPORT_TARGET     "192.168.188.64"  // IP to forward reports to a remote UDP Receiver e.g. a Raspberry Pi.
 #define PUBLISH_REPORT       //Midnight report with Ah per hour

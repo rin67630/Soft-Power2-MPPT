@@ -8,7 +8,9 @@ void wirelessRun()
 #if defined (THINGER)
   if (WiFi.status() == WL_CONNECTED)
   {
+    
     thing.handle();
+    //RefreshThinger thing(THINGER_USERNAME, THINGER_DEVICE, THINGER_DEVICE_CREDENTIALS);
 
     if (NewMinute)
     {

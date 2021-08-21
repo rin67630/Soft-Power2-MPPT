@@ -160,41 +160,42 @@ void menuRun()
       TelnetStream.stop();
       break;
 #endif
-    case 'W':  // WiFi status and enter wiFi credentials if not connected
-      if (WiFi.status() == WL_CONNECTED)
-      {
-        Console2.printf ("\nWiFi Status\n");
-
-        serialPage = '~';
-      } else {
-        // unconnected, need credentials
-        setWiFifromStream();     // blocking!
-      }
-      break;
-    case 'w': //Forget WiFi  !!!
-      Console2.printf ("\nForget WiFi & BECOME LOCAL AP! Confirm? Y or N\n");
-      while ( Console0.available() )
-      {
-        Console0.read(); //flush the rest
-      }
+    case 'W':  // Change WiFi, Goto AP on failure
+      while (Console1.read() != -1); // discard all other received characters
+      Console2.printf ("\nNew WiFi, fail-> LOCAL AP, confirm? Y or N\n");
       while (not Console0.available())
       {}
       // read in the user input
       switch (Console0.read())
       {
         default:
-          Console2.printf ("\n that's a wise decision!\n");
+          Console2.printf ("\n a wise decision!\n");
           break;
         case 'Y':
-          Console2.printf ("\n Y? you have been warned!\n");
+          Console2.printf ("\n Y? you were warned!\n");
+          while (Console1.read() != -1); // discard all other received characters
+          Console1.printf("\nEnter <SSID Password> (with the <>!)\n");
+          while (not Console1.available());
+          // read in the user input
+          Console1.readStringUntil('<'); // ignore everything up to <  (SSID will be overwritten next)
+          ssid = Console1.readStringUntil(' ');        // store SSID
+          pass = Console1.readStringUntil('>');        // store password
+          while (Console1.read() != -1); // discard the reset of the input
+          Console1.printf("\n Going to '%s'(%u), '%s'(%u)\n", ssid.c_str(), ssid.length(), pass.c_str(), pass.length());
 #ifdef TELNET
-          TelnetStream.println("bye bye, cu @AP");
+          TelnetStream.println("bye bye");
           TelnetStream.stop();
 #endif
-          AP_mode();
+          WiFi.disconnect();
+          delay(1000);
+          getWiFi();
           break;
       }
       break;
+    case 'w': //Print WiFi status
+      serialPage = 'w';
+      break;
+
     case 'P': // Write persistence data to EEPROM (Adress = 100...)
       for ( int i = 0; i < sizeof(persistence); ++i ) EEPROM.write ( i + 100,  persistence_punning[i] );
       EEPROM.commit();
