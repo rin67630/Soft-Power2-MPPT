@@ -54,20 +54,8 @@ Which value is changed is ruled by the current screen:
 - on screen 3 Value change the Vo setpoint
 - on screen 4 Value change the Io setpoint
 - on screen 5 Value change the Vi setpoint.
-- on screen 6 Value will change the charger mode of operation  (planned)  
-   "NIGH", Night mode, no charge  
-   "RECO", Recover from discharged battery  
-   "BULK", Bulk charge  
-   "ABSO", Absorption charge  
-   "FLOA", Float charge    
-   "EQUA", Equalization charge  
-   "PAUS", Pause charging  
-   Additional non selectable errors  
-   "OVER", Overcharge  
-   "DISC", Load Disconnection  
-   "NOBA", No Battery  
-   "NOPA", No Panel  
-   "EXAM" 
+- on screen 6 Value will change the charger mode of operation  (only planned yte)  
+
 - on other screens only a message: no set point here! is issued.
 
 You change the value over the rotary encoder, the keys up / down, or 
