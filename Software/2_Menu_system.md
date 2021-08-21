@@ -1,4 +1,4 @@
-# SerialCommunication and Menu system
+# Serial & Telnet Communication and Menu system
 Your Drok-Juntek-on-steroids device operates usually over the cloud functionality of thinger.io.
 
 For debugging purposes it can also be operated over a serial line at 115200 Baud.
