@@ -120,6 +120,8 @@ Vset:14.500 Vout:14.434 Iset:00.650 Iout:00.045 Wout:+00.566
 
 #### "j":   // Reset Job duration totals
 
+#### "w":   // wiFi report : Field stength -IP Address 
+
 example: If you type "sE" you will get the energy report issued every second, if you type "mE" to get the same report issued every minute.
 
 In that last case the output is best suitable with Arduino's serial plotter to get a plot of all values:
@@ -166,8 +168,9 @@ Extra hours 25:H-1, 26:today, 27:D-1, 28:D-2..
 30  | +01.970 | +12.096 | +23.828 |
 ```
 
-
 #### "I":   // Prints internal parameters for debugging purposes.
+
+## System commands
 
 #### 't': // Print time
 Thu Apr 15 15:49:19 2021
@@ -175,12 +178,9 @@ Thu Apr 15 15:49:19 2021
 #### 'T': // Enter time  **Blocking command**
 this command is only useful off-line, with an Internet connection the time is given from the NTP server.
 
-#### "W":   // wiFi report : Field stength -IP Address  / *if not connected* Enter WiFi access data.  **Blocking command**
-               WiFi access data survive resets.
-
-#### "w":   // WiFi disconnect and enter in AP mode  (This can cut you from Access if you are remote)
-
-## System commands
+#### "W":   // Change WiFi enter in AP mode if new WiFi fails **Blocking command**
+This cuts you from Telnet, reconnect at new IP. This can cut you completely if you can't log your client to local AP.
+N.b.  WiFi access data survives resets.
 
 ### 'Z' System reset
 ### 'z' reset integration values
