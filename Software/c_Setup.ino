@@ -1,136 +1,50 @@
 void setup()
 {
-
-  delay(5000);
+  delay(1000); // Wait for serial monitor to be started
   // Serial initialisation
   Serial.begin (SERIAL_SPEED); // On USB port
-  Serial.setTimeout(60000);
-  // Serial.setDebugOutput(true);
+  Serial1.begin(SERIAL_SPEED); // On GPIO2 / D4
+  Serial.setDebugOutput(true);
+  Wire.begin(SDA, SCL);
+  Console4.print("Reset by: "); Console4.print(ESP.getResetReason());
+  Console4.printf("\nESP-Karajan at work,Serial @ %u Baud\nTrying to connect\n\n", SERIAL_SPEED);
 
-#ifdef CONTR_IS_TTGO
-  Wire.begin(I2C_SDA, I2C_SCL);
-#endif
+  pinMode(RELAY1   , OUTPUT);
+  pinMode(RELAY2   , OUTPUT);
+  pinMode(LP_BUCK  , OUTPUT);
+  pinMode(HP_BUCK  , OUTPUT);
+  pinMode(AUX_BUCK , OUTPUT);
+ 
+  /*
+    // Witty Color LEDs
+    pinMode(STDLED, OUTPUT);
+    pinMode(REDLED, OUTPUT);
+    pinMode(GRNLED, OUTPUT);
+    pinMode(BLULED, OUTPUT);
+  */
 
-#ifdef CONTR_IS_WEMOS
-  Wire.begin(I2C_SDA, I2C_SCL);
-#endif
+  // Start dashboard with defaults
+  dashboard.CVbat = 14.400 ;
+  dashboard.CCbat = 3.000 ;
+  dashboard.CVpan = 19.000 ;
+  dashboard.CVaux = 5.0 ;
+  bat_injection = INJ_NEUTRAL;
+  aux_injection = INJ_NEUTRAL;
+  aux_enable = false;
 
+  // Start outputs with defaults
+  digitalWrite(RELAY1, not relay1_value);
+  digitalWrite(RELAY2, not relay2_value);
+  digitalWrite(HP_BUCK, high_power_enable);
+  digitalWrite(LP_BUCK, not high_power_enable);
+  digitalWrite(AUX_BUCK, aux_enable);
+  analogWrite (PWM_BAT, bat_injection);
+  analogWrite (PWM_AUX, aux_injection);
 
-
-#ifdef CONTR_IS_HELTEC
-  Wire.begin(SDA_OLED, SCL_OLED);
-  //  Heltec.begin(false /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/);
-  display.init();
-  display.setContrast(160);
-  display.flipScreenVertically();
-  display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.setFont(ArialMT_Plain_10);
-  display.display();
-  uint64_t chipId = ESP.getEfuseMac(); //The chip ID is essentially its MAC address(length: 6 bytes).
-  Serial.printf("ESP32ChipID=%04X ", (uint16_t)(chipId >> 32)); //print High 2 bytes
-  Serial.printf("%08X\n", (uint32_t)chipId); //print Low 4b
-#endif
-
-  Console4.printf("\n\n\n\n\nDevice %s resetted!\n", DEVICE_NAME);
-  Console4.printf("ESP-Karajan framew. ready:\nSerial @ %u Baud\n", SERIAL_SPEED);
-
-  Console4.printf("Initializing IO \n");
-  pinMode(BUTTON_UP, INPUT_PULLUP);
-  pinMode(BUTTON_DOWN, INPUT_PULLUP);
-  pinMode(ROTARY_ENCODER_A_PIN, INPUT_PULLDOWN);
-  pinMode(ROTARY_ENCODER_B_PIN, INPUT_PULLDOWN);
-  pinMode(ROTARY_ENCODER_BUTTON_PIN, INPUT_PULLUP);
-  pinMode(I2C_RST, OUTPUT);
-  pinMode(ENA_PIN, OUTPUT);
-  digitalWrite(ENA_PIN, LOW); // enable DC/DC converter
-
-  // Settings for PWM  (Usage: ledcWrite(channel, dutycycle);
-  Console4.printf("Initializing PWM \n");
-  ledcSetup(0, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Voltage
-  ledcSetup(3, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Current
-  ledcSetup(4, 2000, 11);             // 11 bit resolution@ 2Khz  PWM for Fan
-  ledcSetup(14, 2000, 11);            // 11 bit resolution@ 2Khz  PWM for Brightness
-  ledcAttachPin(PWM_V, 0);
-  ledcAttachPin(PWM_I, 3);
-  ledcAttachPin(FAN_PIN, 4);
-
-#ifdef DISPLAY_IS_LCD
-  ledcAttachPin(TFT_BL, 14);
-#endif
-
-#ifdef FET_EXTENSION
-  Console4.printf("Initializing FET_Ext \n");
-  pcf8574.pinMode(P0, OUTPUT);
-  pcf8574.pinMode(P1, OUTPUT);
-  pcf8574.pinMode(P2, OUTPUT);
-  pcf8574.pinMode(P3, OUTPUT);
-  pcf8574.pinMode(P4, INPUT);
-  pcf8574.pinMode(P5, INPUT);
-  pcf8574.pinMode(P6, INPUT);
-  pcf8574.pinMode(P7, INPUT);
-#endif
-
-#ifdef ROTARY
-  Console4.printf("Initializing ROT \n");
-  rotaryEncoder.begin();
-  rotaryEncoder.setup
-  (
-    [] { rotaryEncoder.readEncoder_ISR(); },
-    [] { rotary_onButtonClick(); }
-  );
-
-  //set boundaries and if values should circle or not
-  //in this example we will set possible values between 0 and 1000;
-  rotaryEncoder.setBoundaries(-10000, 10000, true); //minValue, maxValue, circleValues true|false (when max go to min and vice versa)
-  rotaryEncoder.setEncoderValue(0);
-  rotaryEncoder.disableAcceleration();
-#endif
-
-  Console4.printf("Initializing ADC \n");
-#ifdef ADC_IS_ADS1115
-  // Settings for ADC
-  if (not adc.init())
-  {
-    Console4.println("ADS1115 not connected!");
-  } else {
-    adc.setConvRate   (ADS1115_475_SPS);
-    adc.setMeasureMode(ADS1115_SINGLE);   //comment line/change parameter to change mode
-  }
-#endif
-
-#ifdef ADC_IS_ESP
-  analogSetWidth(11);               // 11Bit resolution
-  analogSetAttenuation(ADC_0db);    // 0=0db (0..1V) 1= 2,5dB; 2=-6dB (0..2V); 3=-11dB  0.2..2.6V ~linear
-#endif
-
-  Console4.printf("Initializing DIS \n");
-#ifdef DISPLAY_IS_LCD
-  tft.init();    // TTGO e_SPI TFT 240*135 pixel
-#define GFX_WIDTH 240
-#define GFX_HEIGHT 135
-  tft.setRotation(1);
-  tft.fillScreen(TFT_BLACK);
-  tft.setTextSize(1);
-  tft.setTextColor(TFT_WHITE);
-  tft.setCursor(0, 0);
-  setBrightness (BRIGHTNESS);    // Not part of the tft lib. Function is retrofitted in b_Functions
-  tft.setCursor(0, 0, 2); tft.setTextFont(2);  tft.setTextSize(1);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.print("Device Name: ");
-  tft.println(DEVICE_NAME);
-  tft.print("Try connecting..  ");
-#endif
-
-#ifdef DISPLAY_IS_OLED
+#ifndef DISPLAY_IS_NONE
   // Initialising the UI will init the display too.
-  digitalWrite(I2C_RST, LOW);    // set GPIO16 low to reset OLED
-  delay(50);
-  digitalWrite(I2C_RST, HIGH);   // while OLED is running, must set GPIO16 in high
   display.init();
   delay(1000);
-  display.setColor(WHITE);
-  display.setBrightness(BRIGHTNESS / 21);
 #ifdef DISPLAY_REVERSED
   display.flipScreenVertically();
 #endif
@@ -138,21 +52,44 @@ void setup()
   delay(50);
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(0, 0,  "Device Name: ");
-  display.drawString(64, 0,  DEVICE_NAME);
-  display.drawString(0, 12, "Try connect ");
+  display.drawString(0, 0,  DEVICE_NAME);
+  display.drawString(0, 12, "Try connect..");
   display.display();
 #endif
 
-#ifdef CREDENTIALS
-ssid = WIFI_SSID;
-pass = WIFI_PASS;
+#if defined BAT_SOURCE_IS_INA
+  // INA 226 Panel Sensor
+  INA.begin( AMPERE0 , SHUNT0, 0);      // Define max Ampere, Shunt value, Address
+  INA.setBusConversion(100);            // Maximum conversion time 100ms
+  INA.setShuntConversion(100);          // Maximum conversion time 100ms
+  INA.setAveraging(32);                  // Average each reading n-times
+  INA.setMode(INA_MODE_CONTINUOUS_BOTH); // Bus/shunt measured continuously
+  //  INA.alertOnPowerOverLimit(true;450000); //Set alert when power over 45W.
 #endif
 
-  Console4.printf("Init WiFi ");
+#if defined PAN_SOURCE_IS_INA
+  // INA 226 Battery Sensor
+  INA.begin( AMPERE1 , SHUNT1, 1);      // Define max Ampere, Shunt value, Address
+  INA.setBusConversion(100);            // Maximum conversion time 100ms
+  INA.setShuntConversion(100);          // Maximum conversion time 100ms
+  INA.setAveraging(32);                 // Average each reading n-times
+  INA.setMode(INA_MODE_CONTINUOUS_BOTH); // Bus/shunt measured continuously
+  //  INA.alertOnPowerOverLimit(true;450000); //Set alert when power over 45W.
+#endif
+
+#if defined AUX_SOURCE_IS_INA
+  // INA 226 Panel Sensor
+  INA.begin( AMPERE2 , SHUNT2, 2);      // Define max Ampere, Shunt value, Address
+  INA.setBusConversion(100);            // Maximum conversion time 100ms
+  INA.setShuntConversion(100);          // Maximum conversion time 100ms
+  INA.setAveraging(32);                  // Average each reading n-times
+  INA.setMode(INA_MODE_CONTINUOUS_BOTH); // Bus/shunt measured continuously
+  //  INA.alertOnPowerOverLimit(true;50000); // Set alert when power over 5W.
+#endif
+
   // Networking and Time
-  
   getWiFi();
+  WiFi.setOutputPower(WIFI_POWER);
   delay(100);
 
   if (WiFi.status() == WL_CONNECTED)
@@ -194,344 +131,316 @@ pass = WIFI_PASS;
     });
     ArduinoOTA.setHostname(DEVICE_NAME);
     ArduinoOTA.begin();
+    Console4.printf("OTA Ready\n MAC address: %s\nHostname: %s \n", WiFi.macAddress().c_str(), WiFi.hostname().c_str());
+#ifndef DISPLAY_IS_NONE
 
-#ifdef DISPLAY_IS_OLED
-    sprintf(charbuff, " Connected!"); display.drawString(60, 12, charbuff);
-    sprintf(charbuff, "IP= %03d . %03d . %03d . %03d", ip[0], ip[1], ip[2], ip[3]); display.drawString(0, 24, charbuff);
-    display.drawString(0, 36, "User name: ");
-    display.drawString(64, 36, THINGER_USERNAME);
+    sprintf(charbuff, "IP= %03d . %03d",  ip[2], ip[3]); display.drawString(0, 24, charbuff);
     display.display();
-#endif
-
-#ifdef DISPLAY_IS_LCD
-    tft.print(" Connected!\n");
-    sprintf(charbuff, "IP= %03d . %03d . %03d . %03d \nUser Name: ",  ip[0], ip[1], ip[2], ip[3]); tft.print(charbuff); tft.println(THINGER_USERNAME);
-#endif
-
     delay(2000);
+#endif
     getNTP();
-
-#ifdef THINGER
-    Console4.printf("\nInitializing Thinger, Username= %s \n", THINGER_USERNAME);
-
-    //Communication with Thinger.io
-    thing.handle();
-    delay(500); // Wait for contact to happen.
-
+    // Begin listening to UDP port
+    UDP.begin(UDP_PORT);
+    Console4.printf("UDP ports: %u, %u\n", UDP_PORT, UDP_PORT + 1);
+    // IOT initialisation
+#if defined (THINGER)
+    Console4.printf(" Initializing Thinger\n");
     // definition of structures for transmission
     // digital pin control example (i.e. turning on/off a light, a relay, configuring a parameter, etc)
     // resource output example (i.e. reading a sensor value) https://docs.thinger.io/coding#define-output-resources
     // https://docs.thinger.io/coding#read-multiple-data
+
     // it is a bit confusing, but Thinger code placed in setup will be exceuted **periodically when required by the dashboard.
 
+    thing["menu"] << [](pson & in) {
+      displayPage    = in["displayPage"];
+      displaySubPage = in["displaySubPage"];
+      serialPage     = in["serialPage"];
+    };
 
-    // On/Off processing
-    thing["reset_all"] << [](pson & in)
-    { //not yet used: reset all values.
-      if (in.is_empty())
-      {
+    thing["relay1"] << [](pson & in) {
+      if (in.is_empty()) {
+        in = relay1_value;
+      } else {
+        relay1_value = in;
+      }
+    };
+    thing["relay2"] << [](pson & in) {
+      if (in.is_empty()) {
+        in = relay2_value;
+      } else {
+        relay2_value = in;
+      }
+    };
+    thing["DC_out1"] << [](pson & in)
+    {
+      if (in.is_empty()) {
+        in = high_power_enable;
+      } else {
         yield();
-      } else {
-        inbyte = 'z';
+        // high_power_enable = in;
       }
     };
 
-    thing["reboot"] << [](pson & in)
-    { //not yet used: reboot.
-      if (in.is_empty())
-      {
+    thing["DC_out2"] << [](pson & in)
+    {
+      if (in.is_empty()) {
+        in = aux_enable;
+      } else {
         yield();
-      } else {
-        inbyte = 'Z';
+        aux_enable = in;
       }
     };
 
-#ifdef FET_EXTENSION
-    thing["FET0"] << [](pson & in) // 2,5A channel (12V load)
-    {
-      if (in.is_empty())
-      {
-        in = Out_IExt0;
-      } else {
-        Out_IExt0 = in;
-      }
-    };
-    thing["FET1"] << [](pson & in) // 2,5A channel (19V boost)
-    {
-      if (in.is_empty())
-      {
-        in = Out_IExt1;
-      } else {
-        Out_IExt1 = in;
-      }
-    };
-    thing["FET2"] << [](pson & in) // 10A channel (Grid-tied converter)
-    {
-      if (in.is_empty())
-      {
-        in = Out_IExt2;
-      } else {
-        Out_IExt2 = in;
-      }
-    };
-    thing["FET3"] << [](pson & in) // 2,5A channel 38V boost)
-    {
-      if (in.is_empty())
-      {
-        in = Out_IExt3;
-      } else {
-        Out_IExt3 = in;
-      }
-    };
-#endif
-
-    // Radio button style processing with sliders: Slide value is integer, so take value and issue description out of String array
-
-    thing["AhMode "] = [](pson & in, pson & out) {
-      if (in.is_empty())
-      {
-        in = persistence.AhMode ;
-      } else {
-        persistence.AhMode  = in;
-        Runtime = AhCycle_description[persistence.AhMode];
-        if (persistence.AhMode == 0) dashboard.Ahout = dashboard.Whout = persistence.CycleSamples = persistence.CycleVSum = persistence.CycleISum = persistence.CycleWSum = 0;
-      }
-      out = persistence.AhMode ;
-    };
-
-    thing["CtrlMode"]  = [](pson & in, pson & out)
-    {
-      if (in.is_empty())
-      {
-        in = dashboard.CtrlMode ;
-      } else {
-        dashboard.CtrlMode  = in;
-      }
-      out = CtrlMode_description[dashboard.CtrlMode ];
-    };
-
-    // Float processing with sliders: Thinger input is currently only integer, so consider slider value is: float( value * 1000)
+ // Setpoint processing: Thinger input is currently only integer, so slider value is * 1000 and ESP processing makes a float out of it.  
     thing["scv"]  = [](pson & in, pson & out)
     {
       if (in.is_empty())
       {
-        in = dashboard.SetVout * 1000;
+        in = CVbat * 1000;
       } else {
-        dashboard.SetVout = float(in) / 1000;
+      dashboard.CVbat = float(in) / 1000;
       }
-      out = dashboard.SetVout;
-    };
-
-    thing["scp"]  = [](pson & in, pson & out)
-    {
-      if (in.is_empty())
-      {
-        in = dashboard.SetVin * 1000;
-      } else {
-        dashboard.SetVin = float(in) / 1000;
-      }
-      out = dashboard.SetVin;
+      out = dashboard.CVbat;
+      dashboard.CVinj = dashboard.CVbat;      
     };
 
     thing["scc"]  = [](pson & in, pson & out)
     {
       if (in.is_empty())
       {
-        in = dashboard.SetIout * 1000;
+        in = CCbat * 1000;
       } else {
-        dashboard.SetIout = float(in) / 1000;
+      dashboard.CCbat = float(in) / 1000;
       }
-      out = dashboard.SetIout;
+      out = dashboard.CCbat;
+      dashboard.CCinj = dashboard.CCbat;
+    };
+
+    thing["scp"]  = [](pson & in, pson & out)
+    {
+      if (in.is_empty())
+      {
+        in = CVpan * 1000;
+      } else {
+      dashboard.CVpan = float(in) / 1000;
+      }
+      out = dashboard.CVpan;
+    };
+    
+    thing["aux"]  = [](pson & in, pson & out)
+    {
+      if (in.is_empty())
+      {
+        in = CVaux * 1000;
+      } else {
+      dashboard.CVaux = float(in) / 1000;
+      }
+      out = dashboard.CVaux;
+    };
+    
+    thing["mode"]  = [](pson & in, pson & out)
+    {
+      if (in.is_empty())
+      {
+        in = dashboard.modus;
+      } else {
+        dashboard.modus = in;
+      }
+      out = modus_description[dashboard.modus];
+    };
+
+    thing["control"] >> [](pson & out)
+    {
+      out["bat_CV"]          = dashboard.CVbat;
+      out["bat_CC"]          = dashboard.CCbat;
+      out["pan_CV"]          = dashboard.CVpan;
+      out["inj_CV"]          = dashboard.CVinj;
+      out["inj_CC"]          = dashboard.CCinj;      
+      out["inj_DV"]          = dashboard.DVinj;
+      out["aux_CV"]          = dashboard.CVaux;
+      out["bat_inj"]         = bat_injection;
+      out["aux_inj"]         = aux_injection;
+      out["relay1"]          = relay1_value;
+      out["relay2"]          = relay2_value;
+      out["DC1"]             = high_power_enable;
+      out["DC2"]             = aux_enable;
+      out["phaseTXT"]        = phase_description[dashboard.phase];
+      out["modusTXT"]        = modus_description[dashboard.modus];
     };
 
     thing["measure"] >> [](pson & out)
     {
-      out["Vout"]            = dashboard.Vout ;
-      out["Iout"]            = dashboard.Iout ;
-      out["Wout"]            = dashboard.Wout ;
-      out["Ahout"]           = dashboard.Ahout ;
-      out["Whout"]           = dashboard.Whout ;
-      out["Vin"]             = dashboard.Vin ;
-      out["Iin"]             = dashboard.Iin ;
-      out["Iout"]            = dashboard.Iout ;
-      out["SetVout"]         = dashboard.SetVout ;
-      out["ConVin"]          = dashboard.ConVin ;
-      out["ConIout"]         = dashboard.ConIout ;
-      out["SetVin"]          = dashboard.SetVin ;
-      out["SetIout"]         = dashboard.SetIout ;
-      out["DeltaVout"]      = dashboard.Vout - persistence.initial_voltage;
-      out["Ohm"]             = dashboard.load_internal_resistance ;
-      out["Charge%"]         = dashboard.percent_charged ;
+      out["Vpan"]            = dashboard.Vpan ;
+      out["IPan"]            = dashboard.Ipan ;
+      out["Wpan"]            = dashboard.Wpan ;
+      out["Vbat"]            = dashboard.Vbat ; 
+      out["Ibat"]            = dashboard.Ibat ;
+      out["Wbat"]            = dashboard.Wbat ;
+      out["Iaux"]            = dashboard.Iaux ;
+      out["Vaux"]            = dashboard.Vaux ;
+      out["Waux"]            = dashboard.Waux ;
+      out["ohm"]             = dashboard.internal_resistance ;
+      out["efficiency"]      = dashboard.efficiency;
+      out["percent_charged"] = dashboard.percent_charged;
     };
 
-    thing["status"] >> [](pson & out)
+    thing["weather"] >> [](pson & out)
     {
-      out["Runtime"]         = Runtime ;
-      out["Message"]         = Message ;
-      out["ChrgPhaseTXT"]    = ChrgPhase_description[dashboard.ChrgPhase];
-      out["CtrlModeTXT"]     = CtrlMode_description[dashboard.CtrlMode];
-
-    };
-
-
-    thing["HOUR"] >> [](pson & out)
-    {
-      out["Vout"]             = dashboard.Vout ;
-      out["Iout"]             = dashboard.Iout ;
-      out["Wout"]             = dashboard.Wout ;
-      out["Ahout"]            = dashboard.Ahout ;  //Ah of the current cycle
-      out["Whout"]            = dashboard.Whout ;  //Wh of the current cycle
-      out["Vin"]              = dashboard.Vin ;
-      out["Iin"]              = dashboard.Iin ;
-      out["Iout"]             = dashboard.Iout ;
-      out["SetVout"]          = dashboard.SetVout ;
-      out["SetIout"]          = dashboard.SetIout ;
-    };
-
-    thing["MIN"] >> [](pson & out)
-    {
-      out["Vout"]             = dashboard.Vout ;
-      out["Iout"]             = dashboard.Iout ;
-      out["Ioutx10"]          = dashboard.Iout * 10 ;
-      out["Wout"]             = dashboard.Wout ;
-      out["Ahout"]            = Ahout ;           //Ah of the current hour
-      out["Whout"]            = Whout ;           //Ah of the current hour
-      out["Vin"]              = dashboard.Vin ;
-      out["Iin"]              = dashboard.Iin ;
-      out["Iout"]             = dashboard.Iout ;
-      out["SetVout"]          = dashboard.SetVout ;
-      out["SetIout"]          = dashboard.SetIout ;
+      out["temperature"] = outdoor_temperature;
+      out["humidity"]    = outdoor_humidity;
+      out["pressure"]    = outdoor_pressure;
+      out["wind"]        = wind_speed;
+      out["direction"]   = wind_direction;
+      out["summary"]     = weather_summary;
     };
 
     thing["DAY"] >> [](pson & out)
     {
-      out["BAhDay"] = Ah[27];
-      out["BV@0h"]  = persistence.voltageAt0H;
-      out["BVDiff"] = persistence.voltageDelta;
+      out["BAhDay"] = AhBat[27];
+      out["BV@0h"]  = voltageAt0H;
+      out["BVDiff"] = voltageDelta;
+      out["B00h"] = AhBat[0];
+      out["B01h"] = AhBat[1];
+      out["B02h"] = AhBat[2];
+      out["B03h"] = AhBat[3];
+      out["B04h"] = AhBat[4];
+      out["B05h"] = AhBat[5];
+      out["B06h"] = AhBat[6];
+      out["B07h"] = AhBat[7];
+      out["B08h"] = AhBat[8];
+      out["B09h"] = AhBat[9];
+      out["B10h"] = AhBat[10];
+      out["B11h"] = AhBat[11];
+      out["B12h"] = AhBat[12];
+      out["B13h"] = AhBat[13];
+      out["B14h"] = AhBat[14];
+      out["B15h"] = AhBat[15];
+      out["B16h"] = AhBat[16];
+      out["B17h"] = AhBat[17];
+      out["B18h"] = AhBat[18];
+      out["B19h"] = AhBat[19];
+      out["B20h"] = AhBat[20];
+      out["B21h"] = AhBat[21];
+      out["B22h"] = AhBat[22];
+      out["B23h"] = AhBat[23];
     };
 
-    //Initially retrieve the values that must persist after reboot
-    pson thing_property;
-    thing.get_property ("thing_property", thing_property);
-    persistence.voltageAt0H = thing_property["voltageAt0H"];
-    persistence.voltageDelta = thing_property["voltageDelta"];
-    Ahout = thing_property["Ah/hour"];
-    Whout = thing_property["Wh/hour"];
-    persistence.HourSamples = thing_property["HourSamples"];
-    persistence.initial_voltage = thing_property["InitialVoltage"];
+    thing["HOUR"] >> [](pson & out)
+    {
+      out["Vbat"]         = dashboard.Vbat;
+      out["Ibat"]         = dashboard.Ibat;
+      out["Wbat"]         = dashboard.Wbat;
+      out["Ipan"]         = dashboard.Ipan ;
+      out["Vpan"]         = dashboard.Vpan ;
+      out["Wpan"]         = dashboard.Wpan ;
+      out["Ohm"]          = dashboard.internal_resistance ;
+      out["AhBat"]        = AhBat[25];
+      out["percent_charged"] = dashboard.percent_charged;
 
-    // Controller Settings
-    P_value = thing_property["_P_value"];
-    I_value = thing_property["_I_value"]; 
-    D_value = thing_property["_D_value"];
-    MPPT_perturbe = thing_property["_MPPT_perturbe"];
-    fractionVoc = thing_property["_fractionVoc"];
+      out["temperature"]  = outdoor_temperature;
+      out["humidity"]     = outdoor_humidity;
+      out["pressure"]     = outdoor_pressure;
+      out["wind"]         = wind_speed;
+      out["direction"]    = wind_direction;
+      out["summary"]      = weather_summary;
+    };
 
-    // Menu Settings
-    displayPage    = thing_property["_displayPage"];
-    displaySubPage = thing_property["_displaySubPage"];  //not yet used
-    serialPage     = thing_property["_serialPage"];
+    thing["MIN"] >> [](pson & out)
+    {
+      out["Ibat"]         = dashboard_10min.Ibat / 600 ;  // Ø of last 10 Minutes
+      out["Vbat"]         = dashboard_10min.Vbat / 600 ;  // Ø of last 10 Minutes
+      out["Wbat"]         = dashboard_10min.Wbat / 600 ;  // Ø of last 10 Minutes
+      out["Ipan"]         = dashboard.Ipan ;
+      out["Vpan"]         = dashboard.Vpan ;
+      out["Wpan"]         = dashboard.Wpan ;
+//      out["VbatPlot"]     = dashboard.Vbat - 10;
+//      out["VpanPlot"]     = dashboard.Vpan - 10 ;
+      out["Iaux"]         = dashboard.Iaux ;
+      out["Vaux"]         = dashboard.Vaux ;
+      out["Waux"]         = dashboard.Waux ;
+      out["AhBat"]        = AhBat[25];
+      out["efficiency"]   = dashboard.efficiency;
+    };
 
-    // Retrieve the Ah array
-    pson Ah_prop;
-    thing.get_property("AhStat", Ah_prop);  // 0..23=hour, 25=dashboard.Ipan, 26=Ah 24h, 27= AhDay, 28=AhNight, 29=Ah22-24
-    Ah[0]  = Ah_prop["00h"];
-    Ah[1]  = Ah_prop["01h"];
-    Ah[2]  = Ah_prop["02h"];
-    Ah[3]  = Ah_prop["03h"];
-    Ah[4]  = Ah_prop["04h"];
-    Ah[5]  = Ah_prop["05h"];
-    Ah[6]  = Ah_prop["06h"];
-    Ah[7]  = Ah_prop["09h"];
-    Ah[8]  = Ah_prop["08h"];
-    Ah[9]  = Ah_prop["09h"];
-    Ah[10] = Ah_prop["10h"];
-    Ah[11] = Ah_prop["11h"];
-    Ah[12] = Ah_prop["12h"];
-    Ah[13] = Ah_prop["13h"];
-    Ah[14] = Ah_prop["14h"];
-    Ah[15] = Ah_prop["15h"];
-    Ah[16] = Ah_prop["16h"];
-    Ah[17] = Ah_prop["17h"];
-    Ah[18] = Ah_prop["18h"];
-    Ah[19] = Ah_prop["19h"];
-    Ah[20] = Ah_prop["20h"];
-    Ah[21] = Ah_prop["21h"];
-    Ah[22] = Ah_prop["22h"];
-    Ah[23] = Ah_prop["23h"];
-    Ah[25] = Ah_prop["LastHour"];
-    Ah[27] = Ah_prop["Yesterday"];
-    Ah[26] = Ah_prop["Today"];
+    //Communication with Thinger.io
+    thing.handle();
+    delay(1000); // Wait for contact to happen.
+    // Retrieve Persistance values
 
-    pson LTData;
-    thing.get_property("LongTerm", LTData);
-    persistence.initial_voltage = LTData["initial_voltage"];
-    persistence.voltageAt0H     = LTData["voltageAt0H"];
-    persistence.voltageDelta    = LTData["voltageDelta"];
-    persistence.HourVSum        = LTData["HourVSum"];
-    persistence.HourISum        = LTData["HourISum"];
-    persistence.HourWSum        = LTData["HourWSum"];
-    persistence.HourSamples     = LTData["HourSamples"];
-    persistence.CycleVSum       = LTData["CycleVSum"];
-    persistence.CycleISum       = LTData["CycleISum"];
-    persistence.CycleWSum       = LTData["CycleWSum"];
-    persistence.CycleSamples    = LTData["CycleSamples"];
-    persistence.AhMode          = LTData["AhMode"];
-
+    pson persistance;
+#if (defined BAT_SOURCE_IS_INA) || (defined BAT_SOURCE_IS_UDP)
+    thing.get_property("persistance", persistance);
+    currentInt          = persistance["currentInt"];
+    nCurrent            = persistance["nCurrent"];
+    AhBat[25]           = persistance["Ah/hour"];
+    AhBat[27]           = persistance["Ah/yesterday"];
+    voltageDelta        = persistance["voltageDelta"];
+    voltageAt0H         = persistance["voltageAt0H"];
 #endif
+    outdoor_temperature = persistance["temperature"];
+    outdoor_humidity    = persistance["humidity"];
+    outdoor_pressure    = persistance["pressure"];
+    wind_speed          = persistance["wind"];
+    wind_direction      = persistance["direction"];
 
-  } //end if WiFi Status == Connected
+    pson BATmAh;
+    thing.get_property("BAT", BATmAh);  // 0..23=hour, 25=dashboard.Ipan, 26=BATmAh 24h, 27= AhBatDay, 28=AhBatNight, 29=AhBat22-24
+    AhBat[0]  = BATmAh["00h"];
+    AhBat[1]  = BATmAh["01h"];
+    AhBat[2]  = BATmAh["02h"];
+    AhBat[3]  = BATmAh["03h"];
+    AhBat[4]  = BATmAh["04h"];
+    AhBat[5]  = BATmAh["05h"];
+    AhBat[6]  = BATmAh["06h"];
+    AhBat[7]  = BATmAh["09h"];
+    AhBat[8]  = BATmAh["08h"];
+    AhBat[9]  = BATmAh["09h"];
+    AhBat[10] = BATmAh["10h"];
+    AhBat[11] = BATmAh["11h"];
+    AhBat[12] = BATmAh["12h"];
+    AhBat[13] = BATmAh["13h"];
+    AhBat[14] = BATmAh["14h"];
+    AhBat[15] = BATmAh["15h"];
+    AhBat[16] = BATmAh["16h"];
+    AhBat[17] = BATmAh["17h"];
+    AhBat[18] = BATmAh["18h"];
+    AhBat[19] = BATmAh["19h"];
+    AhBat[20] = BATmAh["20h"];
+    AhBat[21] = BATmAh["21h"];
+    AhBat[22] = BATmAh["22h"];
+    AhBat[23] = BATmAh["23h"];
+    AhBat[25] = BATmAh["LastHour"];
+    AhBat[27] = BATmAh["Yesterday"];
+    AhBat[26] = BATmAh["Today"];
+/*
+// no Thinger
+      // Persistance over Structure and memcpy.
+      EEPROM.get(addr,data);
+      EEPROM.put(addr,data);
+      EEPROM.commit();
+*/
+#endif  //end if defined THINGER
+  }
 
   delay(1000);
 
   getEpoch();            // writes the Epoch (Numbers of seconds till 1.1.1970...
   getTimeData();         // breaks down the Epoch into discrete values.
 
-  sprintf(charbuff, "\nNow is %s, %02d %s %04d %02d:%02d:%02d. Epoch =%10lu\n", DayName, Day, MonthName, Year, Hour, Minute, Second, Epoch);  Console4.println(charbuff);
-  sprintf(charbuff, "%s, %02d %s %04d %02d:%02d:%02d", DayName, Day, MonthName, Year, Hour, Minute, Second);
+  sprintf(charbuff, "Now is %s, %02d %s %04d %02d:%02d:%02d. Epoch =%10lu\n", DayName, Day, MonthName, Year, Hour, Minute, Second, Epoch);  Console4.println(charbuff);
 
-#ifdef DISPLAY_IS_OLED
-  display.drawString(0, 48, charbuff);
-  display.display();
-#endif
-
-#ifdef DISPLAY_IS_LCD
-  tft.println();
-  tft.print(charbuff);
-#endif
-
-  delay(2000);
-#ifdef DISPLAY_IS_LCD
-  tft.fillScreen(TFT_BLACK);
-#endif
-
-#ifdef TELNET
-TelnetStream.begin();
-#endif
-
-#ifndef THINGER
-  // read/write persistence from EEPROM (Adress = 100...)
-  for ( int i = 0; i < sizeof(persistence); ++i ) persistence_punning[i] = EEPROM.read ( i + 100 );
-  memcpy(&persistence, persistence_punning, sizeof(persistence));
-  //  EEPROM.write ( i + 100,  persistence_punning[i] );
-#endif
-
-  serialPage = '0';           // default reporting page
-  displayPage = 1;
-  serialPeriodicity = '!';
-
-  if (dashboard.SetVout == 0)   // still uninitialized, loading defaults
-  {
-    dashboard.SetVout = dashboard.ConVout = phase_voltage[4];
-    dashboard.SetIout = 4;
-    dashboard.SetVin = dashboard.ConVin = PANEL_MPP;
-    lastADC_Vout = lastADC_Iout = 500;
-  }
-#ifdef TELNET
-  Console4.print("Ready to accept TELNET commands\n " );
-  TelnetStream.print("Ready to accept commands\n " );
+#if defined BAT_SOURCE_IS_NONE
+  dashboard.Vbat = (MAX_VOLT + MIN_VOLT) / 2;
+  dashboard.Ipan = 0;
 #else
-  Console4.print("Ready to accept Serial commands\n " );
-#endif  
+
+#endif
+
+  // Initialisations.
+
+  serialPage = '0';           // default reporting page AK Modulbus
+  //  digitalWrite(STDLED, true);
+
 }
 //end Setup
