@@ -9,7 +9,7 @@ Juntek and Drok (maybe others) sell some interesting cheap but good programmable
 https://www.aliexpress.com/item/32872687512.html  
 - Drok D6008 for 100W-200W for panel class up to 48Vmp (60V/8A buck converter)  
 https://www.aliexpress.com/item/32862110549.html  
-- Drok D6012 for 200W-400V panel class up to 75VVmp (80V/12A buck converter)   
+- Drok D6012 for 200W-400W panel class up to 75VVmp (80V/12A buck converter)   
 https://www.aliexpress.com/item/32863179021.html  
 
 *(links only given to identify the modules, you are encouraged to procure the devices from your favourite source)  
@@ -21,7 +21,7 @@ Drok-Juntek-on-Steroids is getting a universal framework to build various soluti
 - Programmable loads
 and much more...  
 You are encouraged to have a look there and look at the hardware section on how to build your own device.  
-(A bit of soldering is required. I expect to get soon a PCB to simplify the wiring.)
+(A bit of soldering is required. I am providing a PCB to simplify the wiring.)
 
 ## but what is Soft-Power2-MPPT?
 It is a **self-contained** WiFi network enabled MPPT controller with:
