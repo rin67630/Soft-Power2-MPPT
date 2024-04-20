@@ -12,7 +12,7 @@ While the injection technique where working quite good, the tiny buck converters
 So I decided to re-launch the project with more robust hardware.   
 
 Juntek and Drok (maybe others) sell some interesting cheap but good programmable buck converter modules e.g.: 
-- DPS3806 (60V/6A boost/buck converter)
+- DPS3806 (60V/6A boost/buck converter)  
  https://www.aliexpress.com/item/1005001591485527.html
 - Juntek B3603 for 20-100W panel class upto 30Vmp (36V/3A buck converter):   
 https://www.aliexpress.com/item/32872687512.html  
